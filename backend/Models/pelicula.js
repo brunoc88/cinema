@@ -4,7 +4,8 @@ const peliculaSchema = mongoose.Schema(
     {
         nombre: {
             type: String,
-            required: true
+            required: true,
+            unique: true
         },
         director: {
             type: String,
