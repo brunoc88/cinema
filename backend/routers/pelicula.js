@@ -5,6 +5,6 @@ router.get('/index', peliculaController.obtenerPeliculas)
 
 router.post('/alta', peliculaController.altaPelicula)
 
-
+router.delete('/baja/:id', peliculaController.bajarPelicula)
 
 module.exports = router

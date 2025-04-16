@@ -4,6 +4,7 @@ const app = require('../app');
 const Pelicula = require('../models/pelicula');
 const { getPeliculas } = require('./test_helper');
 
+
 const api = supertest(app);
 
 beforeEach(async () => {
@@ -110,6 +111,23 @@ describe('GET /pelicula/index', () => {
             .get('/pelicula/index')
             .expect(200)
             .expect('Content-Type', /application\/json/)
+    })
+})
+
+describe('DELETE /pelicula/baja/:id',() => {
+    test('Eliminar Pelicula', async() => {
+        const peliculas = await getPeliculas();
+        const pelicula = peliculas[0]
+
+        const respuesta = await api
+        .delete(`/pelicula/baja/${pelicula.id}`)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+        
+        const peliculasFinal = await getPeliculas();
+
+        expect(respuesta.body.message).toContain('Pelicula eliminada con éxito!')
+        expect(peliculasFinal).toHaveLength(peliculas.length -1)
     })
 })
 
