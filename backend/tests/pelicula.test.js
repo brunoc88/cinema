@@ -36,7 +36,7 @@ describe('POST /pelicula/alta', () => {
             .post('/pelicula/alta')
             .send(pelicula)
             .expect(201)
-            .expect('Content-Type', /application\/json/);
+            .expect('Content-Type', /application\/json/)
 
         const pelisAlFinal = await getPeliculas();
 

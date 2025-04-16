@@ -3,7 +3,9 @@ const app = express()
 const logger = require('./utils/loggers')
 const { MONGODB_URI } = require('./utils/config')
 const mongoose = require('mongoose')
+const cors = require('cors')
 const peliculaRouter = require('./routers/pelicula')
+const userRouter = require('./routers/user')
 
 
 //conectando a la DB
@@ -21,12 +23,12 @@ mongoose.connect(MONGODB_URI)
 
 
 //middleware
+app.use(cors())
 app.use(express.json())
 
 //rutas
 app.use('/pelicula',peliculaRouter)
-
-app.get('/',(req,res)=> res.status(200).send('Hola!'));
+app.use('/user', userRouter)
 
 
 module.exports = app

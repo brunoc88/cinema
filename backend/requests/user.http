@@ -1,0 +1,11 @@
+GET http://localhost:3000/user/index 
+
+###
+POST http://localhost:3000/user/alta
+Content-Type: application/json
+
+{
+    "userName": "jorgito56",
+    "email": "jorgito56@gmail.com",
+    "password": "123"
+}
