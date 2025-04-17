@@ -8,7 +8,7 @@ exports.altaPelicula = async (req, res) => {
       return res.status(400).json({ error: errores });
     }
 
-    const { nombre } = req.body;
+    const { nombre, director, genero, descripcion, lanzamiento } = req.body;
 
     const existente = await Pelicula.findOne({ nombre });
 
@@ -16,7 +16,15 @@ exports.altaPelicula = async (req, res) => {
       return res.status(409).json('Ya existe una película con ese nombre');
     }
 
-    const nuevaPelicula = await Pelicula.create(req.body);
+    const imagen = req.file ? req.file.path : null
+
+    const nuevaPelicula = {
+      nombre,
+      director,
+      genero,
+      descripcion,
+      imagen:imagen
+    }
 
     return res.status(201).json({
       Mensaje: 'Película creada con éxito!',

@@ -22,7 +22,8 @@ const peliculaSchema = mongoose.Schema(
         descripcion:{
             type: String,
             required: true
-        }
+        },
+        imagen: String // ruta de la imagen, por ejemplo: 'uploads/miimagen.jpg'
     }
 )
 

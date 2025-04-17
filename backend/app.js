@@ -1,5 +1,6 @@
 const express = require('express')
 const app = express()
+const path = require('path')
 const logger = require('./utils/loggers')
 const { MONGODB_URI } = require('./utils/config')
 const mongoose = require('mongoose')
@@ -23,6 +24,7 @@ mongoose.connect(MONGODB_URI)
 
 
 //middleware
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 app.use(cors())
 app.use(express.json())
 
