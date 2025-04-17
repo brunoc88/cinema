@@ -6,7 +6,7 @@ const mongoose = require('mongoose')
 const cors = require('cors')
 const peliculaRouter = require('./routers/pelicula')
 const userRouter = require('./routers/user')
-
+const loginRouter = require('./routers/login')
 
 //conectando a la DB
 mongoose.set('strictQuery',false)
@@ -29,6 +29,6 @@ app.use(express.json())
 //rutas
 app.use('/pelicula',peliculaRouter)
 app.use('/user', userRouter)
-
+app.use('/login', loginRouter)
 
 module.exports = app

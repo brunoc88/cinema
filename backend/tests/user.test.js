@@ -97,6 +97,91 @@ describe('GET /user/index', () =>{
     })
 })
 
+describe('POST /login', () =>{
+    test('Login usuario con email', async() => {
+        const user = {
+            user: 'jorgito56@gmail.com',
+            password: 'sekret'
+        }
+
+        const res = await api
+        .post('/login')
+        .send(user)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+
+        expect(res.body.token).toBeDefined() //para saber si contiene una propiedad o variable token
+        expect(res.body.username).toBe('jorgito56')//tobe sirve para comparar valores exactos
+        //toContain sirve para comparar valores en string o arrays
+        //como user name no es ninguno de los dos se uso toBe
+    })
+
+    test('Login usuario con username', async() => {
+        const user = {
+            user: 'jorgito56',
+            password: 'sekret'
+        }
+
+        const res = await api
+        .post('/login')
+        .send(user)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+
+        expect(res.body.token).toBeDefined() 
+        expect(res.body.username).toBe('jorgito56')
+        expect(res.body.email).toBe('jorgito56@gmail.com')
+        
+    })
+
+    test('Login sin usuario', async() => {
+        const user = {
+            password: 'sekret'
+        }
+
+        const res = await api
+        .post('/login')
+        .send(user)
+        .expect(400)
+        .expect('Content-Type', /application\/json/)
+
+        expect(res.body.error).toContain('Ingresar un usuario y contraseña!')
+        
+    })
+
+    test('Login con usuario falso', async() => {
+        const user = {
+            user: 'jaimito',
+            password: '000'
+        }
+
+        const res = await api
+        .post('/login')
+        .send(user)
+        .expect(401)
+        .expect('Content-Type', /application\/json/)
+
+        expect(res.body.error).toContain('Usuario o contraseña incorrectos!')
+        
+    })
+
+    test('Login usuario con password incorrecto', async() => {
+        const user = {
+            user: 'jorgito56@gmail.com',
+            password: '000'
+        }
+
+        const res = await api
+        .post('/login')
+        .send(user)
+        .expect(401)
+        .expect('Content-Type', /application\/json/)
+
+        expect(res.body.error).toContain('Usuario o contraseña incorrectos!')
+        
+    })
+})
+
 afterAll(async () => {
     await mongoose.connection.close()
 })
