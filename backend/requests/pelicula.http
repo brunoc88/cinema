@@ -1,0 +1,16 @@
+GET http://localhost:3000/pelicula/index
+
+###
+POST http://localhost:3000/pelicula/alta
+Content-Type: application/json
+
+{
+    "nombre": "Terminator",
+    "director": "James Cameron",
+    "lanzamiento": 1984,
+    "genero": "Accion",
+    "descripcion": "Una máquina del futuro es enviada al pasado"
+}
+
+###
+DELETE http://localhost:3000/pelicula/baja/67fe961f6c6231d9e00da40d
