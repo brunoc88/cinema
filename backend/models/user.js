@@ -15,7 +15,11 @@ const userSchema = mongoose.Schema({
     password:{
         type: String,
         require: true
-    }
+    },
+    peliculas:[{
+        type: mongoose.Schema.ObjectId,
+        ref: 'Pelicula'
+    }]
 })
 
 userSchema.set('toJSON', {

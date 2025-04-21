@@ -1,7 +1,10 @@
 GET http://localhost:3000/pelicula/index
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJydW5vODgiLCJpZCI6IjY4MDY0ZDdlYTE3ZTJkZTVjNTU0NzRkOCIsImlhdCI6MTc0NTI0ODEzNCwiZXhwIjoxNzQ1MjUxNzM0fQ.ybqy9a6iZlOjYbOrSUH2UrNr3zuIAFY9BsSjKHhkuO8
 
 ###
+
 POST http://localhost:3000/pelicula/alta
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJydW5vODgiLCJpZCI6IjY4MDY0ZDdlYTE3ZTJkZTVjNTU0NzRkOCIsImlhdCI6MTc0NTI0ODQ5MiwiZXhwIjoxNzQ1MjUyMDkyfQ.myumCkrQNSzDWEx-WdHOyEsF3azBfP57CRTUod2U7gg
 Content-Type: application/json
 
 {
@@ -11,6 +14,6 @@ Content-Type: application/json
     "genero": "Accion",
     "descripcion": "Una máquina del futuro es enviada al pasado"
 }
-
 ###
-DELETE http://localhost:3000/pelicula/baja/67fe961f6c6231d9e00da40d
+DELETE http://localhost:3000/pelicula/baja/68065447738825b05f6ca8ce
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJydW5vODgiLCJpZCI6IjY4MDY0ZDdlYTE3ZTJkZTVjNTU0NzRkOCIsImlhdCI6MTc0NTI0ODQ5MiwiZXhwIjoxNzQ1MjUyMDkyfQ.myumCkrQNSzDWEx-WdHOyEsF3azBfP57CRTUod2U7gg

@@ -4,10 +4,10 @@ const logger = require('../utils/loggers')
 
 exports.obtenerUsuarios = async (req, res) =>{
     try {
-        const users = await User.find({})
+        const users = await User.find({}).populate('peliculas', { nombre: 1, id: 1 })
         return res.status(200).json(users)
     } catch (error) {
-        return res.status(500).json({error: 'Error al buscar usuarios'})
+        return res.status(500).json({error: 'Error al buscar usuarios', details: error.message})
     }
 }
 

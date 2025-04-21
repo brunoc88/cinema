@@ -5,6 +5,7 @@ const logger = require('./utils/loggers')
 const { MONGODB_URI } = require('./utils/config')
 const mongoose = require('mongoose')
 const cors = require('cors')
+const { tokenExtractor }= require('./utils/middleware')
 const peliculaRouter = require('./routers/pelicula')
 const userRouter = require('./routers/user')
 const loginRouter = require('./routers/login')
@@ -27,7 +28,7 @@ mongoose.connect(MONGODB_URI)
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 app.use(cors())
 app.use(express.json())
-
+app.use(tokenExtractor)
 //rutas
 app.use('/pelicula',peliculaRouter)
 app.use('/user', userRouter)

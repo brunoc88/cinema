@@ -1,44 +1,56 @@
 const Pelicula = require('../models/pelicula')
+const path = require('path')
 
 exports.altaPelicula = async (req, res) => {
   try {
-    const errores = verificarDatos(req.body);
+
+    const errores = verificarDatos(req.body)
 
     if (errores.length > 0) {
-      return res.status(400).json({ error: errores });
+      return res.status(400).json({ error: errores })
     }
 
-    const { nombre, director, genero, descripcion, lanzamiento } = req.body;
+    const { nombre, director, genero, descripcion, lanzamiento } = req.body
 
-    const existente = await Pelicula.findOne({ nombre });
+    const existente = await Pelicula.findOne({ nombre })
 
     if (existente) {
-      return res.status(409).json('Ya existe una película con ese nombre');
+      return res.status(409).json('Ya existe una película con ese nombre')
     }
 
-    const imagen = req.file ? req.file.path : null
+     // Si no se proporciona imagen, asigna la imagen por defecto
+     const imagen = req.file ? req.file.path : path.join('uploads', 'default.png')
 
-    const nuevaPelicula = {
+    const nuevaPelicula = new Pelicula({
       nombre,
       director,
       genero,
       descripcion,
-      imagen:imagen
-    }
+      imagen:imagen,
+      lanzamiento,
+      likes: 0,
+      user: req.user._id
+    })
+
+    await nuevaPelicula.save()
+
+    req.user.peliculas = req.user.peliculas.concat(nuevaPelicula._id)
+    await req.user.save()
 
     return res.status(201).json({
       Mensaje: 'Película creada con éxito!',
       pelicula: nuevaPelicula
-    });
+    })
+
   } catch (error) {
-    return res.status(500).json('Error al crear la película');
+    return res.status(500).json({error:'Error al crear la película', details: error.message})
   }
-};
+}
 
 exports.obtenerPeliculas = async (req, res) => {
   try {
-    const peliculas = await Pelicula.find({});
-    return res.status(200).json(peliculas);
+    const peliculas = await Pelicula.find({}).populate('user', { userName: 1, email: 1 })
+    return res.status(200).json(peliculas)
   } catch (error) {
     return res.status(500).json('Error al obtener películas');
   }
@@ -47,6 +59,13 @@ exports.obtenerPeliculas = async (req, res) => {
 exports.bajarPelicula = async (req, res) => {
   try {
     const id = req.params.id
+
+    const pelicula = await Pelicula.findById(id)
+
+    if(pelicula.user.toString() !== req.user.id){
+      return res.status(401).json({error: 'No tienes autorizacion!', 
+      details: 'Solo el creador puede borrar su posteo!'})
+    }
 
     const peliculaEliminada = await Pelicula.findByIdAndDelete(id)
     if (!peliculaEliminada) {
