@@ -59,7 +59,7 @@ describe('POST /pelicula/alta', () => {
 
         const pelisAntes = await getPeliculas()
 
-        await api
+        const res = await api
             .post('/pelicula/alta')
             .set('Authorization', `Bearer ${token}`)
             .send(pelicula)
@@ -71,17 +71,20 @@ describe('POST /pelicula/alta', () => {
 
         const nombres = pelisDespues.map(p => p.nombre)
         expect(nombres).toContain('Terminator')
+        expect(res.body.Mensaje).toContain('Película creada con éxito!')
     })
     
     test('Enviando datos vacios', async () => {
         const pelicula = {}
 
-        await api
+        const res = await api
             .post('/pelicula/alta')
             .set('Authorization', `Bearer ${token}`)
             .send(pelicula)
             .expect(400)
-            .expect('Content-Type', /application\/json/);
+            .expect('Content-Type', /application\/json/)
+
+        expect(res.body.error).toContain('Formulario vacío')
     })
 
     test('Duplicado de peliculas', async () => {
@@ -93,12 +96,14 @@ describe('POST /pelicula/alta', () => {
             descripcion: 'Neo y las pastillas'
         };
 
-        await api
+        const res = await api
             .post('/pelicula/alta')
             .set('Authorization', `Bearer ${token}`)
             .send(pelicula)
             .expect(409)
-            .expect('Content-Type', /application\/json/);
+            .expect('Content-Type', /application\/json/)
+
+        expect(res.body.error).toContain('Ya existe una película con ese nombre')
     })
     test('Falta el nombre', async () => {
         const peliculaSinNombre = {
@@ -158,11 +163,15 @@ describe('POST /pelicula/alta', () => {
 
 describe('GET /pelicula/index', () => {
     test('obtener listado de peliculas', async () => {
-        await api
+        const res = await api
             .get('/pelicula/index')
             .set('Authorization', `Bearer ${token}`)
             .expect(200)
             .expect('Content-Type', /application\/json/)
+        
+            // Verificar que el array no sea nulo ni undefined
+            expect(res.body).not.toBeNull()
+            expect(res.body).toBeDefined()
     })
 
     test('obtener listado de peliculas sin token', async () => {
@@ -221,6 +230,120 @@ describe('DELETE /pelicula/baja/:id', () => {
 
         expect(respuesta.body.error).toContain('No tienes autorizacion!')
         expect(respuesta.body.details).toContain('Solo el creador puede borrar su posteo!')
+    })
+})
+
+describe('PUT /pelicula/editar/:id', () =>{
+    test('Editar una pelicula', async () =>{
+        const peliculas = await getPeliculas()
+        const id = peliculas[0].id
+
+        const peliculaModificada = {
+            nombre: "Rambo",
+            director: "Ted Kotcheff",
+            genero: "Accion",
+            lanzamiento: 1982,
+            descripcion: "Un militar que visita la ciudad de su antiguo maestro"
+        }
+
+        const res = await api
+        .put(`/pelicula/editar/${id}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send(peliculaModificada)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+
+        const peliculasFinal = await getPeliculas()
+        const peliculasTitulos = peliculasFinal.map(p=>p.nombre)
+        
+        expect(res.body.message).toContain('Pelicula modificada!')
+        expect(peliculasTitulos).toContain('Rambo')
+    })
+
+    test('Formulario vacio', async ()=>{
+        const peliculas = await getPeliculas()
+        const id = peliculas[0].id
+
+        const peliculaModificada = {}
+
+        const res = await api
+        .put(`/pelicula/editar/${id}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send(peliculaModificada)
+        .expect(400)
+        .expect('Content-Type', /application\/json/)
+        
+        expect(res.body.error).toContain('Formulario vacío')
+    })
+
+    test('Mandar los mismos datos', async ()=>{
+        const peliculas = await getPeliculas()
+        const id = peliculas[0].id
+
+        const pelicula = {
+            nombre: 'Matrix',
+            director: 'Wachowski',
+            lanzamiento: 1999,
+            genero: 'Sci-Fi',
+            descripcion: 'Neo y las pastillas'
+        }
+
+        const res = await api
+        .put(`/pelicula/editar/${id}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send(pelicula)
+        .expect(400)
+        .expect('Content-Type', /application\/json/)
+
+        expect(res.body.error).toContain('No hubo cambios!')
+    })
+
+    test('Ponerle el nombre de otra Pelicula existente', async()=>{
+        const peliculaNueva = {
+            nombre: "Terminator",
+            director: "James Cameron",
+            lanzamiento: 1984,
+            genero: "Accion",
+            descripcion: "Una máquina del futuro es enviada al pasado"
+        }
+
+        await Pelicula.create(peliculaNueva)
+
+        const peliculaInicial = {
+            nombre: 'Terminator',
+            director: 'Wachowski',
+            lanzamiento: 1999,
+            genero: 'Sci-Fi',
+            descripcion: 'Neo y las pastillas'
+        }
+
+        const peliculas = await getPeliculas()
+        const id = peliculas[0].id
+
+        const res = await api
+        .put(`/pelicula/editar/${id}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send(peliculaInicial)
+        .expect(409)
+        .expect('Content-Type', /application\/json/)
+
+        expect(res.body.error).toContain('Ya existe una pelicula con ese nombre!')
+
+    })
+})
+
+describe('PATCH /pelicula/like/:id', () =>{
+    test.only('Like a pelicula', async () =>{
+        const peliculas = await getPeliculas()
+        const id = peliculas[0].id
+
+        const res = await api
+        .patch(`/pelicula/like/${id}`)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+
+        expect(res.body.message).toContain('Like agregado!')
     })
 })
 

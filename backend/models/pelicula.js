@@ -25,7 +25,7 @@ const peliculaSchema = mongoose.Schema(
         },
         imagen: {
             type: String,
-            required: true
+            default: 'default.png'
         },
         user:{
             type: mongoose.Schema.ObjectId,
