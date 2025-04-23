@@ -333,7 +333,7 @@ describe('PUT /pelicula/editar/:id', () =>{
 })
 
 describe('PATCH /pelicula/like/:id', () =>{
-    test.only('Like a pelicula', async () =>{
+    test('Like a pelicula', async () =>{
         const peliculas = await getPeliculas()
         const id = peliculas[0].id
 

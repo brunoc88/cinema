@@ -14,7 +14,8 @@ const userSchema = mongoose.Schema({
     },
     password:{
         type: String,
-        require: true
+        require: true,
+        minlength: 3
     },
     peliculas:[{
         type: mongoose.Schema.ObjectId,
