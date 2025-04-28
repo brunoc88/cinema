@@ -6,7 +6,7 @@ const mongoose = require('mongoose')
 const cors = require('cors')
 const logger = require('./utils/loggers')
 const { MONGODB_URI } = require('./utils/config')
-const { tokenExtractor } = require('./utils/middleware')
+const { tokenExtractor, requestLogger, unknownEndpoint } = require('./utils/middleware')
 const peliculaRouter = require('./routers/pelicula')
 const userRouter = require('./routers/user')
 const loginRouter = require('./routers/login')
@@ -33,5 +33,8 @@ app.use(tokenExtractor)
 app.use('/pelicula', peliculaRouter)
 app.use('/user', userRouter)
 app.use('/login', loginRouter)
+
+app.use(requestLogger)
+app.use(unknownEndpoint)
 
 module.exports = app
