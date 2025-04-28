@@ -1,16 +1,17 @@
-const Pelicula = require('../models/pelicula')
 const path = require('path')
+const Pelicula = require('../models/pelicula')
 
 exports.altaPelicula = async (req, res) => {
   try {
-
     const errores = verificarDatos(req.body)
 
     if (errores.length > 0) {
       return res.status(400).json({ error: errores })
     }
 
-    const { nombre, director, genero, descripcion, lanzamiento } = req.body
+    const {
+      nombre, director, genero, descripcion, lanzamiento
+    } = req.body
 
     const existente = await Pelicula.findOne({ nombre })
 
@@ -26,7 +27,7 @@ exports.altaPelicula = async (req, res) => {
       director,
       genero,
       descripcion,
-      imagen: imagen,
+      imagen,
       lanzamiento,
       likes: 0,
       user: req.user._id
@@ -41,7 +42,6 @@ exports.altaPelicula = async (req, res) => {
       Mensaje: 'Película creada con éxito!',
       pelicula: nuevaPelicula
     })
-
   } catch (error) {
     return res.status(500).json({ error: 'Error al crear la película', details: error.message })
   }
@@ -52,13 +52,13 @@ exports.obtenerPeliculas = async (req, res) => {
     const peliculas = await Pelicula.find({}).populate('user', { userName: 1, email: 1 })
     return res.status(200).json(peliculas)
   } catch (error) {
-    return res.status(500).json('Error al obtener películas');
+    return res.status(500).json('Error al obtener películas')
   }
 }
 
 exports.bajarPelicula = async (req, res) => {
   try {
-    const id = req.params.id
+    const { id } = req.params
 
     const pelicula = await Pelicula.findById(id)
 
@@ -74,7 +74,6 @@ exports.bajarPelicula = async (req, res) => {
       return res.status(404).json({ error: 'Pelicula no encontrada' })
     }
 
-
     return res.status(200).json({ message: 'Pelicula eliminada con éxito!' })
   } catch (error) {
     return res.status(500).json({ error: 'Hubo un problema', details: error.message })
@@ -83,14 +82,13 @@ exports.bajarPelicula = async (req, res) => {
 
 exports.editarPelicula = async (req, res) => {
   try {
-    const id = req.params.id
+    const { id } = req.params
 
-    const pelicula = await Pelicula.findById(id);
+    const pelicula = await Pelicula.findById(id)
 
     if (!pelicula) {
-      return res.status(404).json({ error: 'Película no encontrada' });
+      return res.status(404).json({ error: 'Película no encontrada' })
     }
-
 
     const errores = verificarDatos(req.body)
 
@@ -103,18 +101,17 @@ exports.editarPelicula = async (req, res) => {
     if (cambios) {
       return res.status(400).json({ error: cambios })
     }
-    
+
     // Verificar si ya existe una película con el nombre proporcionado
     const peliculaExistente = await Pelicula.findOne({ nombre: req.body.nombre })
 
     if (pelicula.nombre !== req.body.nombre) {
       if (peliculaExistente) {
-        return res.status(409).json({ error: 'Ya existe una pelicula con ese nombre!' });
+        return res.status(409).json({ error: 'Ya existe una pelicula con ese nombre!' })
       }
     }
 
     const imagen = req.file ? req.file.path : pelicula.imagen || 'default.png'
-
 
     const peliculaEdita = {
       nombre: req.body.nombre,
@@ -122,7 +119,7 @@ exports.editarPelicula = async (req, res) => {
       genero: req.body.genero,
       lanzamiento: req.body.lanzamiento,
       descripcion: req.body.descripcion,
-      imagen: imagen
+      imagen
     }
 
     const guardarPeliculaEditada = await Pelicula.findByIdAndUpdate(id, peliculaEdita, { new: true, runValidators: true })
@@ -140,7 +137,7 @@ exports.darLike = async (req, res) => {
       return res.status(404).json({ error: 'Película no encontrada' })
     }
 
-    pelicula.likes = pelicula.likes + 1
+    pelicula.likes += 1
     await pelicula.save()
 
     return res.status(200).json({ message: 'Like agregado!', likes: pelicula.likes })
@@ -149,38 +146,40 @@ exports.darLike = async (req, res) => {
   }
 }
 
-
 const verificarDatos = (body) => {
-  const { nombre, director, genero, descripcion, lanzamiento } = body;
+  const {
+    nombre, director, genero, descripcion, lanzamiento
+  } = body
 
-  const errores = [];
+  const errores = []
 
   if (!nombre && !director && !genero && !descripcion && !lanzamiento) {
-    errores.push('Formulario vacío');
-    return errores;
+    errores.push('Formulario vacío')
+    return errores
   }
 
-  if (!nombre) errores.push('Falta el nombre!');
-  if (!director) errores.push('Falta el director!');
-  if (!genero) errores.push('Falta el género!');
-  if (!descripcion) errores.push('Falta la descripción!');
-  if (!lanzamiento) errores.push('Falta el lanzamiento!');
+  if (!nombre) errores.push('Falta el nombre!')
+  if (!director) errores.push('Falta el director!')
+  if (!genero) errores.push('Falta el género!')
+  if (!descripcion) errores.push('Falta la descripción!')
+  if (!lanzamiento) errores.push('Falta el lanzamiento!')
 
-  return errores;
+  return errores
 }
 
 const verificarCambios = (body, pelicula) => {
-  const { nombre, director, genero, descripcion, lanzamiento } = body;
+  const {
+    nombre, director, genero, descripcion, lanzamiento
+  } = body
 
   if (
-    nombre === pelicula.nombre &&
-    director === pelicula.director &&
-    genero === pelicula.genero &&
-    descripcion === pelicula.descripcion &&
-    lanzamiento === pelicula.lanzamiento
+    nombre === pelicula.nombre
+    && director === pelicula.director
+    && genero === pelicula.genero
+    && descripcion === pelicula.descripcion
+    && lanzamiento === pelicula.lanzamiento
   ) {
-    return 'No hubo cambios!';
+    return 'No hubo cambios!'
   }
-  return null; // Si hubo cambios, devuelve null o undefined
+  return null // Si hubo cambios, devuelve null o undefined
 }
-

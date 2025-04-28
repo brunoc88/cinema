@@ -1,0 +1,22 @@
+{
+    "env": {
+      "node": true,
+      "jest": true,
+      "es2021": true
+    },
+    "extends": [
+      "airbnb-base"
+    ],
+    "rules": {
+      "semi": ["error", "never"],   // No usar punto y coma
+      "space-before-function-paren": ["error", "always"], // Espacio antes de las funciones
+      "func-names": ["error", "never"], // No poner nombres en las funciones anónimas
+      "no-console": "off", // Permitir el uso de console.log para desarrollo
+      "indent": ["error", 2], // Usar 2 espacios para la indentación
+      "quotes": ["error", "single"], // Usar comillas simples
+      "comma-dangle": ["error", "only-multiline"], // Añadir coma solo en líneas múltiples
+      "no-magic-numbers": "off", // Deshabilitar la regla de "números mágicos"
+      "consistent-return": "off" // Permitir funciones con retornos inconsistentes
+    }
+  }
+  
