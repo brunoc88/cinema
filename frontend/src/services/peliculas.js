@@ -9,12 +9,22 @@ const setToken = newToken => {
 
 const getPeliculas = () => {
     try {
-        const res = axios.get(`${baseUrl}/index`)
-        return res.data
+       
+        if(!token){
+            throw new Error('Acceso invalido!')
+        }
+
+        let config = {
+            headers: { Authorization: token }
+        }
+          
+        const request = axios.get(`${baseUrl}/index`, config)
+        
+        return request.then(res => res.data)
     } catch (error) {
-        console({error: 'error al obtener peliculas', details:error})
+        console.log({error: 'error al obtener peliculas', details:error})
         throw error
     }
 }
 
-export default { getPeliculas }
+export { getPeliculas, setToken }

@@ -1,20 +1,25 @@
-const Pelicula = ({peliculas}) =>{
-    return(
+const Pelicula = ({ peliculas }) => {
+    return (
         <div>
-            <ul>
-            {peliculas && peliculas.map(p => {
+            {peliculas && peliculas.map(p => (
                 <li key={p.nombre}>
+                    <img
+                        src={`http://localhost:3000/${p.imagen.replace('\\', '/')}`}
+                        alt={p.nombre}
+                        width="200"
+                    />
                     <h3>Nombre: {p.nombre}</h3>
                     <p>Director: {p.director}</p>
-                    <p>Director: {p.genero}</p>
-                    <p>Director: {p.lanzamiento}</p>
-                    <p>Director: {p.descripcion}</p>
-                    <p>Director: {p.likes}</p>
+                    <p>Género: {p.genero}</p>
+                    <p>Lanzamiento: {p.lanzamiento}</p>
+                    <p>Descripción: {p.descripcion}</p>
+                    <p>Likes: {p.likes}</p>
+                    <p>Creador: {p.user.userName}</p>
                 </li>
-            })}
-            </ul>
+            ))}
+
         </div>
     )
-} 
+}
 
-export {Pelicula}
+export { Pelicula }
