@@ -26,6 +26,7 @@ mongoose.connect(MONGODB_URI)
 
 // middleware
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')))
+
 app.use(cors())
 app.use(express.json())
 app.use(tokenExtractor)

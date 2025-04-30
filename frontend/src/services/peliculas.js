@@ -27,4 +27,18 @@ const getPeliculas = () => {
     }
 }
 
-export { getPeliculas, setToken }
+const postearPelicula = async (formData) => {
+    if (!token) throw new Error('Acceso inválido!')
+    
+    const config = {
+      headers: {
+        Authorization: token,
+        'Content-Type': 'multipart/form-data'
+      }
+    }
+  
+    const res = await axios.post(`${baseUrl}/alta`, formData, config)
+    return res.data
+  }
+  
+export { getPeliculas, setToken, postearPelicula }

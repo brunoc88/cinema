@@ -3,7 +3,7 @@ import { LoginForm } from "./components/login"
 import { Pelicula } from "./components/pelicula"
 import { PeliculaForm } from "./components/peliculaForm"
 import { loginUser } from "./services/login"
-import { setToken, getPeliculas } from "./services/peliculas"
+import { setToken, getPeliculas, postearPelicula } from "./services/peliculas"
 
 
 const App = () => {
@@ -19,6 +19,8 @@ const App = () => {
     descripcion: '',
     imagen: null // imagen se guarda como archivo
   })
+  const [mostrarFormularioPelicula, setMostrarFormularioPelicula] = useState(false)
+  const [notificaciones, setNotificaciones] = useState([])
 
 
   useEffect(() => {
@@ -46,9 +48,11 @@ const App = () => {
 
   const handlerPelicula = (event) => {
     const { value, name } = event.target
-    
-    setPelicula({...pelicula, 
-      [name]:value})
+
+    setPelicula({
+      ...pelicula,
+      [name]: value
+    })
   }
 
   const handleFileChange = (event) => {
@@ -78,15 +82,44 @@ const App = () => {
     window.localStorage.removeItem('loggerCinemaAppUser');
   }
 
+  const handleSubmit = async (event) => {
+    try {
+      event.preventDefault()
+      const formData = new FormData()
+      formData.append('nombre', pelicula.nombre)
+      formData.append('director', pelicula.director)
+      formData.append('genero', pelicula.genero)
+      formData.append('descripcion', pelicula.descripcion)
+      formData.append('lanzamiento', pelicula.lanzamiento)
+      formData.append('imagen', pelicula.imagen)
+  
+      const nueva = await postearPelicula(formData)
+  
+      setPeliculas([...peliculas, nueva.pelicula]) // asumimos que el backend responde con pelicula
+      setMostrarFormularioPelicula(false) // cerrar form
+      setPelicula({//limpiamos form
+        nombre: '',
+        director: '',
+        lanzamiento: '',
+        genero: '',
+        descripcion: '',
+        imagen: null
+      })
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  
+
   if (!user) {
-    return (     
-        <div>
-          <LoginForm
-            user={(event) => setUsername(event.target.value)}
-            password={(event) => setPassword(event.target.value)}
-            handleSubmit={handlerLogin}
-          />
-        </div>
+    return (
+      <div>
+        <LoginForm
+          user={(event) => setUsername(event.target.value)}
+          password={(event) => setPassword(event.target.value)}
+          handleSubmit={handlerLogin}
+        />
+      </div>
     )
   }
   return (
@@ -94,14 +127,21 @@ const App = () => {
       <div>
         <p>{user.username} logged in <button onClick={handleLogOut}>logout</button></p>
       </div>
-      <div>
-          <button>Crear Pelicula</button>
-          <PeliculaForm handler = {handlerPelicula} handlerFile = {handleFileChange}/>
-      </div>
+      <button onClick={() => setMostrarFormularioPelicula(!mostrarFormularioPelicula)}>
+        {mostrarFormularioPelicula ? 'Cancelar' : 'Crear Película'}
+      </button>
+      {mostrarFormularioPelicula && (
+        <PeliculaForm
+          handler={handlerPelicula}
+          handlerFile={handleFileChange}
+          handleSubmit={handleSubmit}
+        />
+      )}
+
       <div>
         <Pelicula peliculas={peliculas} />
       </div>
-      
+
     </div>
   )
 }

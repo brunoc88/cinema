@@ -1,4 +1,3 @@
-const path = require('path')
 const Pelicula = require('../models/pelicula')
 
 exports.altaPelicula = async (req, res) => {
@@ -19,15 +18,13 @@ exports.altaPelicula = async (req, res) => {
       return res.status(409).json({ error: 'Ya existe una película con ese nombre' })
     }
 
-    // Si no se proporciona imagen, asigna la imagen por defecto
-    const imagen = req.file ? req.file.path : path.join('uploads', 'default.png')
 
     const nuevaPelicula = new Pelicula({
       nombre,
       director,
       genero,
       descripcion,
-      imagen,
+      imagen: req.file ? req.file.filename : 'default.png',
       lanzamiento,
       likes: 0,
       user: req.user._id
@@ -35,6 +32,9 @@ exports.altaPelicula = async (req, res) => {
 
     await nuevaPelicula.save()
 
+    // Popula el usuario antes de devolver la película
+    const peliculaConUsuario = await Pelicula.findById(nuevaPelicula._id).populate('user')
+    
     req.user.peliculas = req.user.peliculas.concat(nuevaPelicula._id)
     await req.user.save()
 

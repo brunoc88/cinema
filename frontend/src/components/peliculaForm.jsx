@@ -1,7 +1,7 @@
 const PeliculaForm = ({handler, handlerFile, handleSubmit}) =>{
     return(
         <div>
-            <form onSubmit={handleSubmit} method="post" enctype="multipart/form-data">
+            <form onSubmit={handleSubmit} method="post" encType="multipart/form-data">
                 <div>
                     Nombre:
                     <input type="text" name = "nombre" onChange={handler}/>
@@ -13,6 +13,7 @@ const PeliculaForm = ({handler, handlerFile, handleSubmit}) =>{
                 <div>
                     Genero:
                     <select name="genero" onChange={handler}>
+                        <option>--Seleccione--</option>
                         <option value="Accion">Accion</option>
                         <option value="Terror">Terror</option>
                         <option value="Comedia">Comedia</option>
@@ -21,7 +22,7 @@ const PeliculaForm = ({handler, handlerFile, handleSubmit}) =>{
                 </div>
                 <div>
                     Descripcion:
-                    <input type="text" name = "descripcion" onChange={handler}/>
+                    <textarea name="descripcion" onChange={handler} rows="4" cols="40" />
                 </div>
                 <div>
                     Lanzamiento:
