@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { LoginForm } from "./components/login"
 import { Pelicula } from "./components/pelicula"
 import { PeliculaForm } from "./components/peliculaForm"
+import { Notificaciones } from "./components/notificaciones"
 import { loginUser } from "./services/login"
 import { setToken, getPeliculas, postearPelicula } from "./services/peliculas"
 
@@ -20,7 +21,8 @@ const App = () => {
     imagen: null // imagen se guarda como archivo
   })
   const [mostrarFormularioPelicula, setMostrarFormularioPelicula] = useState(false)
-  const [notificaciones, setNotificaciones] = useState([])
+  const [error, setError] = useState([])
+  const [exito, setExito] = useState({})
 
 
   useEffect(() => {
@@ -94,7 +96,15 @@ const App = () => {
       formData.append('imagen', pelicula.imagen)
   
       const nueva = await postearPelicula(formData)
-  
+      console.log("RESPUESTA", nueva)
+      if (nueva && nueva.error) {
+        setError(nueva.error)
+        setTimeout(() => {
+          setError([])
+        }, 5000)
+        return // detener ejecución si hay error
+      }
+      
       setPeliculas([...peliculas, nueva.pelicula]) // asumimos que el backend responde con pelicula
       setMostrarFormularioPelicula(false) // cerrar form
       setPelicula({//limpiamos form
@@ -105,6 +115,22 @@ const App = () => {
         descripcion: '',
         imagen: null
       })
+
+      /*
+      if (nueva.Mensaje || nueva.message) {
+        //const msj = nueva.Mensaje || nueva.message
+        const msj = 'exito'
+        setExito(msj)
+        setTimeout(() => {
+          setExito('')
+        }, 5000)
+      }*/
+
+        const msj = 'exito'
+        setExito(msj)
+        setTimeout(() => {
+          setExito('')
+        }, 5000)
     } catch (error) {
       console.error(error)
     }
@@ -126,6 +152,9 @@ const App = () => {
     <div>
       <div>
         <p>{user.username} logged in <button onClick={handleLogOut}>logout</button></p>
+      </div>
+      <div>
+        <Notificaciones notificaciones={error?error : exito}/>
       </div>
       <button onClick={() => setMostrarFormularioPelicula(!mostrarFormularioPelicula)}>
         {mostrarFormularioPelicula ? 'Cancelar' : 'Crear Película'}
