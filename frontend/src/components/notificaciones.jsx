@@ -1,50 +1,23 @@
+const Notificaciones = ({ notificacion }) => {
+  if (!notificacion) return null
 
-const Notificaciones = ({ notificaciones }) => {
-  const estiloExito = {
-    textAlign: 'center',
-    backgroundColor: 'lightgreen',
-    color: 'green',
-    borderStyle: 'solid',
-    borderRadius: '5px',
-    borderColor: 'green',
-    fontSize: 'large',
-    marginBottom: '10px',
-    padding: '10px'
+  const estilo = {
+    color: notificacion.tipo === 'error' ? 'red' : 'green',
+    background: '#eee',
+    padding: 10,
+    marginBottom: 10,
+    border: `1px solid ${notificacion.tipo === 'error' ? 'red' : 'green'}`
   }
 
-  const estiloError = {
-    textAlign: 'center',
-    backgroundColor: 'pink',
-    color: 'red',
-    borderStyle: 'solid',
-    borderRadius: '5px',
-    borderColor: 'red',
-    fontSize: 'large',
-    marginBottom: '10px',
-    padding: '10px'
-  }
-
-  if (!notificaciones) return null
-
-  if (Array.isArray(notificaciones)) {
-    return (
-      <div>
-        {notificaciones.map((mensaje, index) => (
-          <p key={index} style={estiloError}>
-            {mensaje}
-          </p>
-        ))}
-      </div>
-    )
-  }
+  const mensaje = Array.isArray(notificacion.mensaje)
+    ? notificacion.mensaje.join(', ')
+    : notificacion.mensaje
 
   return (
-    <div>
-      <p style={estiloExito}>{notificaciones}</p>
+    <div style={estilo}>
+      {mensaje}
     </div>
   )
 }
 
-export { Notificaciones }
-
-  
+export {Notificaciones}

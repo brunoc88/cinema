@@ -1,4 +1,5 @@
-const Pelicula = ({ peliculas }) => {
+const Pelicula = ({ peliculas, user, eliminarPelicula }) => {
+
     return (
         <div>
             {peliculas && peliculas.map(p => (
@@ -8,7 +9,6 @@ const Pelicula = ({ peliculas }) => {
                         alt={p.nombre}
                         width="200"
                     />
-
                     <h3>Nombre: {p.nombre}</h3>
                     <p>Director: {p.director}</p>
                     <p>Género: {p.genero}</p>
@@ -16,11 +16,15 @@ const Pelicula = ({ peliculas }) => {
                     <p>Descripción: {p.descripcion}</p>
                     <p>Creador: {p.user.userName}</p>
                     <p>Likes: {p.likes}</p>
+                    <div>
+                        {user.username === p.user.userName && (
+                            <button onClick={()=>eliminarPelicula(p.id)}>Eliminar</button>
+                        )}
+                    </div>
                 </li>
             ))}
-
         </div>
     )
 }
 
-export { Pelicula }
+export { Pelicula };

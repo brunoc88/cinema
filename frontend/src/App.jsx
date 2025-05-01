@@ -4,7 +4,7 @@ import { Pelicula } from "./components/pelicula"
 import { PeliculaForm } from "./components/peliculaForm"
 import { Notificaciones } from "./components/notificaciones"
 import { loginUser } from "./services/login"
-import { setToken, getPeliculas, postearPelicula } from "./services/peliculas"
+import { setToken, getPeliculas, postearPelicula, eliminarPelicula } from "./services/peliculas"
 
 
 const App = () => {
@@ -21,8 +21,7 @@ const App = () => {
     imagen: null // imagen se guarda como archivo
   })
   const [mostrarFormularioPelicula, setMostrarFormularioPelicula] = useState(false)
-  const [error, setError] = useState([])
-  const [exito, setExito] = useState({})
+  const [notificacion, setNotificacion] = useState(null)
 
 
   useEffect(() => {
@@ -94,17 +93,21 @@ const App = () => {
       formData.append('descripcion', pelicula.descripcion)
       formData.append('lanzamiento', pelicula.lanzamiento)
       formData.append('imagen', pelicula.imagen)
-  
+
       const nueva = await postearPelicula(formData)
-      console.log("RESPUESTA", nueva)
+      console.log('Respuesta del POST:', nueva)
+
+      // En caso de error
       if (nueva && nueva.error) {
-        setError(nueva.error)
-        setTimeout(() => {
-          setError([])
-        }, 5000)
-        return // detener ejecución si hay error
+        setNotificacion({ tipo: 'error', mensaje: nueva.error })
+        setTimeout(() => setNotificacion(null), 5000)
+        return
       }
-      
+
+      // En caso de éxito
+      setNotificacion({ tipo: 'exito', mensaje: nueva.Mensaje })
+      setTimeout(() => setNotificacion(null), 5000)
+
       setPeliculas([...peliculas, nueva.pelicula]) // asumimos que el backend responde con pelicula
       setMostrarFormularioPelicula(false) // cerrar form
       setPelicula({//limpiamos form
@@ -116,26 +119,26 @@ const App = () => {
         imagen: null
       })
 
-      /*
-      if (nueva.Mensaje || nueva.message) {
-        //const msj = nueva.Mensaje || nueva.message
-        const msj = 'exito'
-        setExito(msj)
-        setTimeout(() => {
-          setExito('')
-        }, 5000)
-      }*/
 
-        const msj = 'exito'
-        setExito(msj)
-        setTimeout(() => {
-          setExito('')
-        }, 5000)
     } catch (error) {
       console.error(error)
     }
   }
-  
+
+  const handlerEliminarPelicula = async (id) =>{
+    try {
+      const res = await eliminarPelicula(id)
+      setPeliculas(prev => prev.filter(pelicula => pelicula.id !== id))
+      setNotificacion({tipo: 'exito', mensaje: res.message})
+      setTimeout(() => {
+        setNotificacion(null)
+      }, 5000);
+    } catch (error) {
+      console.error(error)
+      setNotificacion({ tipo: 'error', mensaje: error.response?.data?.error || "Error al eliminar" })
+      setTimeout(() => setNotificacion(null), 5000)
+    }
+  }
 
   if (!user) {
     return (
@@ -154,7 +157,7 @@ const App = () => {
         <p>{user.username} logged in <button onClick={handleLogOut}>logout</button></p>
       </div>
       <div>
-        <Notificaciones notificaciones={error?error : exito}/>
+        <Notificaciones notificacion={notificacion} />
       </div>
       <button onClick={() => setMostrarFormularioPelicula(!mostrarFormularioPelicula)}>
         {mostrarFormularioPelicula ? 'Cancelar' : 'Crear Película'}
@@ -168,7 +171,7 @@ const App = () => {
       )}
 
       <div>
-        <Pelicula peliculas={peliculas} />
+        <Pelicula peliculas={peliculas} user = {user} eliminarPelicula = {handlerEliminarPelicula}/>
       </div>
 
     </div>
