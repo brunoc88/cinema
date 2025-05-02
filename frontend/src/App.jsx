@@ -4,7 +4,7 @@ import { Pelicula } from "./components/pelicula"
 import { PeliculaForm } from "./components/peliculaForm"
 import { Notificaciones } from "./components/notificaciones"
 import { loginUser } from "./services/login"
-import { setToken, getPeliculas, postearPelicula, eliminarPelicula } from "./services/peliculas"
+import { setToken, getPeliculas, postearPelicula, eliminarPelicula, obtenerPelicula, editarPelicula } from "./services/peliculas"
 
 
 const App = () => {
@@ -22,7 +22,7 @@ const App = () => {
   })
   const [mostrarFormularioPelicula, setMostrarFormularioPelicula] = useState(false)
   const [notificacion, setNotificacion] = useState(null)
-
+  const [modoEdicion, setModoEdicion] = useState(false)
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggerCinemaAppUser')
@@ -125,11 +125,11 @@ const App = () => {
     }
   }
 
-  const handlerEliminarPelicula = async (id) =>{
+  const handlerEliminarPelicula = async (id) => {
     try {
       const res = await eliminarPelicula(id)
       setPeliculas(prev => prev.filter(pelicula => pelicula.id !== id))
-      setNotificacion({tipo: 'exito', mensaje: res.message})
+      setNotificacion({ tipo: 'exito', mensaje: res.message })
       setTimeout(() => {
         setNotificacion(null)
       }, 5000);
@@ -137,6 +137,68 @@ const App = () => {
       console.error(error)
       setNotificacion({ tipo: 'error', mensaje: error.response?.data?.error || "Error al eliminar" })
       setTimeout(() => setNotificacion(null), 5000)
+    }
+  }
+
+  const handlerObtenerPelicula = async (id) => {
+    try {
+      const pelicula = await obtenerPelicula(id)
+      setPelicula(pelicula)
+      setModoEdicion(true)
+      setMostrarFormularioPelicula(true)
+    } catch (error) {
+      setNotificacion({ tipo: 'error', mensaje: error.response?.data?.error })
+      setTimeout(() => {
+        setNotificacion(null)
+      }, 5000);
+    }
+  }
+
+  const handleEditarSubmit = async (event) => {
+    try {
+      event.preventDefault()
+      const formData = new FormData()
+      formData.append('nombre', pelicula.nombre)
+      formData.append('director', pelicula.director)
+      formData.append('genero', pelicula.genero)
+      formData.append('descripcion', pelicula.descripcion)
+      formData.append('lanzamiento', pelicula.lanzamiento)
+      formData.append('imagen', pelicula.imagen)
+
+      const respuesta = await editarPelicula(pelicula.id, formData)
+
+      if (respuesta && respuesta.error) {
+        setNotificacion({ tipo: 'error', mensaje: respuesta.error })
+        setTimeout(() => setNotificacion(null), 5000)
+        return
+      }
+
+      setNotificacion({ tipo: 'exito', mensaje: respuesta.Mensaje })
+      setTimeout(() => setNotificacion(null), 5000)
+
+      // actualizar la lista sin tener que hacer otro GET
+      setPeliculas(prev =>
+        prev.map(p => (p.id === pelicula.id ? respuesta.pelicula : p))
+      )
+
+      // reset
+      setMostrarFormularioPelicula(false)
+      setModoEdicion(false)
+      setPelicula({
+        nombre: '',
+        director: '',
+        lanzamiento: '',
+        genero: '',
+        descripcion: '',
+        imagen: null
+      })
+
+      setNotificacion({ tipo: 'Exito', mensaje: respuesta.message })
+      setTimeout(() => {
+        setNotificacion(null)
+      }, 5000);
+    } catch (error) {
+      console.error(error)
     }
   }
 
@@ -154,24 +216,44 @@ const App = () => {
   return (
     <div>
       <div>
-        <p>{user.username} logged in <button onClick={handleLogOut}>logout</button></p>
+        <p className="nav">Bienvenido {user.username}! logged in <button onClick={handleLogOut}>logout</button></p>
       </div>
       <div>
         <Notificaciones notificacion={notificacion} />
       </div>
-      <button onClick={() => setMostrarFormularioPelicula(!mostrarFormularioPelicula)}>
+      <button onClick={() => {
+        if (!mostrarFormularioPelicula) {
+          // Si voy a mostrar el formulario, aseguro de limpiar el estado
+          setPelicula({
+            nombre: '',
+            director: '',
+            lanzamiento: '',
+            genero: '',
+            descripcion: '',
+            imagen: null
+          })
+          setModoEdicion(false)
+        }
+        setMostrarFormularioPelicula(!mostrarFormularioPelicula)
+      }}>
         {mostrarFormularioPelicula ? 'Cancelar' : 'Crear Película'}
       </button>
+
       {mostrarFormularioPelicula && (
         <PeliculaForm
           handler={handlerPelicula}
           handlerFile={handleFileChange}
-          handleSubmit={handleSubmit}
+          handleSubmit={modoEdicion ? handleEditarSubmit : handleSubmit}
+          pelicula={pelicula}
         />
       )}
 
       <div>
-        <Pelicula peliculas={peliculas} user = {user} eliminarPelicula = {handlerEliminarPelicula}/>
+        <Pelicula
+          peliculas={peliculas}
+          user={user}
+          eliminarPelicula={handlerEliminarPelicula}
+          editar={handlerObtenerPelicula} />
       </div>
 
     </div>

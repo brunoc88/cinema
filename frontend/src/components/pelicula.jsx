@@ -1,9 +1,9 @@
-const Pelicula = ({ peliculas, user, eliminarPelicula }) => {
+const Pelicula = ({ peliculas, user, eliminarPelicula, editar }) => {
 
     return (
         <div>
             {peliculas && peliculas.map(p => (
-                <li key={p.nombre}>
+                <li key={p.nombre} className="tarjeta">
                     <img
                         src={`http://localhost:3000/uploads/${p.imagen}`}
                         alt={p.nombre}
@@ -16,9 +16,10 @@ const Pelicula = ({ peliculas, user, eliminarPelicula }) => {
                     <p>Descripción: {p.descripcion}</p>
                     <p>Creador: {p.user.userName}</p>
                     <p>Likes: {p.likes}</p>
+                    <button  className="editar" onClick={()=>editar(p.id)}>Editar</button>
                     <div>
                         {user.username === p.user.userName && (
-                            <button onClick={()=>eliminarPelicula(p.id)}>Eliminar</button>
+                            <button className="eliminar" onClick={()=>eliminarPelicula(p.id)}>Eliminar</button>
                         )}
                     </div>
                 </li>

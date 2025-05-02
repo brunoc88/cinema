@@ -62,9 +62,44 @@ const eliminarPelicula = async (id) => {
     }
 }
 
+const obtenerPelicula = async (id) => {
+    try {
+        if (!token) throw new Error('Acceso inválido!')
+            const config = {
+                headers: {
+                    Authorization: token,
+                    'Content-Type': 'multipart/form-data'
+                }
+            }
+            const res = await axios.get(`${baseUrl}/actualizar/${id}`, config)
+            return res.data
+    } catch (error) {
+        return { error: error.response?.data.error + error.response?.data.details }
+    }
+}
+
+const editarPelicula = async (id, formData) => {
+    try {
+        if (!token) throw new Error('Acceso inválido!')
+        const config = {
+            headers: {
+                Authorization: token,
+                'Content-Type': 'multipart/form-data'
+            }
+        }
+        const res = await axios.put(`${baseUrl}/editar/${id}`, formData, config)
+        return res.data
+    } catch (error) {
+        return { error: error.response?.data?.error + " " + error.response?.data?.details }
+    }
+}
+
+
 export {
     getPeliculas,
     setToken,
     postearPelicula,
-    eliminarPelicula
+    eliminarPelicula,
+    obtenerPelicula,
+    editarPelicula
 }
