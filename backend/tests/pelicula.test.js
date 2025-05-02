@@ -342,6 +342,22 @@ describe('PATCH /pelicula/like/:id', () => {
   })
 })
 
+describe('GET /pelicula/actualizar/:id', () => {
+  test('Obtener Pelicula', async () => {
+    const peliculas = await getPeliculas()
+    const id = peliculas[0].id
+
+    const res = await api
+      .get(`/pelicula/actualizar/${id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    expect(res.body).not.toBeNull()
+    expect(res.body).toBeDefined()
+  })
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })

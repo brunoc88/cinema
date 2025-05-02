@@ -146,6 +146,22 @@ exports.darLike = async (req, res) => {
   }
 }
 
+exports.encontrarPelicula = async (req, res) => {
+  try {
+    const id = req.params.id
+
+    const pelicula = await Pelicula.findById(id)
+
+    if(!pelicula){
+      return res.status(404).json({error: 'No se encontro la pelicula!'})
+    }
+
+    return res.status(200).json(pelicula)
+  } catch (error) {
+    return res.status(500).json({error: 'Hubo un error al obtener pelicula', details: error.message })
+  }
+}
+
 const verificarDatos = (body) => {
   const {
     nombre, director, genero, descripcion, lanzamiento

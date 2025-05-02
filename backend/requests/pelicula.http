@@ -1,6 +1,5 @@
 GET http://localhost:3000/pelicula/index
 Authorization: Bearer 
-
 ###
 
 POST http://localhost:3000/pelicula/alta
@@ -30,3 +29,9 @@ Content-Type: application/json
     "genero": "Accion",
     "descripcion": "Una máquina del futuro es enviada al pasado"
 }
+
+###
+
+GET http://localhost:3000/pelicula/actualizar/id
+Authorization: Bearer 
+
