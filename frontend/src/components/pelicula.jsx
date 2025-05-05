@@ -14,7 +14,7 @@ const Pelicula = ({ peliculas, user, eliminarPelicula, editar }) => {
                     <p>Género: {p.genero}</p>
                     <p>Lanzamiento: {p.lanzamiento}</p>
                     <p>Descripción: {p.descripcion}</p>
-                    <p>Creador: {p.user.userName}</p>
+                    <p>Creador: {p.user.userName?p.user.userName:'Usuario eliminado'}</p>
                     <p>Likes: {p.likes}</p>
                     <button  className="editar" onClick={()=>editar(p.id)}>Editar</button>
                     <div>

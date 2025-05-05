@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react"
-import { LoginForm } from "./components/login"
-import { Pelicula } from "./components/pelicula"
-import { PeliculaForm } from "./components/peliculaForm"
-import { Notificaciones } from "./components/notificaciones"
+import { LoginForm } from "./components/Login"
+import { Pelicula } from "./components/Pelicula"
+import { PeliculaForm } from "./components/PeliculaForm"
+import { UserForm } from "./components/userForm"
+import { Notificaciones } from "./components/Notificaciones"
 import { loginUser } from "./services/login"
 import { setToken, getPeliculas, postearPelicula, eliminarPelicula, obtenerPelicula, editarPelicula } from "./services/peliculas"
-
+import { crearUsuario } from "./services/user"
 
 const App = () => {
   const [username, setUsername] = useState('')
@@ -23,6 +24,8 @@ const App = () => {
   const [mostrarFormularioPelicula, setMostrarFormularioPelicula] = useState(false)
   const [notificacion, setNotificacion] = useState(null)
   const [modoEdicion, setModoEdicion] = useState(false)
+  const [userForm, setUserForm] = useState({ userName: '', email: '', password: '' })
+  const [registrarse, setRegistrarse] = useState(false)
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggerCinemaAppUser')
@@ -193,7 +196,7 @@ const App = () => {
         imagen: null
       })
 
-      setNotificacion({ tipo: 'Exito', mensaje: respuesta.message })
+      setNotificacion({ tipo: 'exito', mensaje: respuesta.message })
       setTimeout(() => {
         setNotificacion(null)
       }, 5000);
@@ -202,17 +205,74 @@ const App = () => {
     }
   }
 
+  //handlers de usuario
+
+  const handlerUsuario = (event) => {
+    const { name, value } = event.target;
+    setUserForm(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  }
+
+
+  const handlerSubmitUser = async (event) => {
+    try {
+      event.preventDefault()
+      const res = await crearUsuario(userForm)
+      if (res && res.error) {
+        setNotificacion({ tipo: 'error', mensaje: res.error })
+        console.log("ERROR:", error)
+        setTimeout(() => {
+          setNotificacion(null)
+        }, 5000)
+      }
+      setUser(res.user)
+      setNotificacion({ tipo: 'exito', mensaje: res.message })
+      setRegistrarse({
+        userName: '',
+        email: '',
+        password: ''
+      })
+      setTimeout(() => {
+        setNotificacion(null)
+      }, 5000);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   if (!user) {
     return (
       <div>
-        <LoginForm
-          user={(event) => setUsername(event.target.value)}
-          password={(event) => setPassword(event.target.value)}
-          handleSubmit={handlerLogin}
-        />
+        <div>
+          <Notificaciones notificacion={notificacion} />
+        </div>
+        <div>
+          {!registrarse ? (
+            <LoginForm
+              user={(event) => setUsername(event.target.value)}
+              password={(event) => setPassword(event.target.value)}
+              handleSubmit={handlerLogin}
+            />
+          ) : (
+            <UserForm
+              handlerUsuario={handlerUsuario}
+              handlerSubmit={handlerSubmitUser}
+              user={userForm}
+              setRegistrarse={setRegistrarse}
+            />
+          )}
+        </div>
+        <div>
+          {!registrarse && (
+            <button onClick={() => setRegistrarse(true)}>Registrarse</button>
+          )}
+        </div>
       </div>
-    )
+    );
   }
+  
   return (
     <div>
       <div>
