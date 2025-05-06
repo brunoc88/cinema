@@ -5,6 +5,7 @@ import { PeliculaForm } from "./components/PeliculaForm"
 import { UserForm } from "./components/userForm"
 import { Notificaciones } from "./components/Notificaciones"
 import { loginUser } from "./services/login"
+import { Perfil } from "./components/profile"
 import { setToken, getPeliculas, postearPelicula, eliminarPelicula, obtenerPelicula, editarPelicula } from "./services/peliculas"
 import { crearUsuario } from "./services/user"
 
@@ -26,6 +27,7 @@ const App = () => {
   const [modoEdicion, setModoEdicion] = useState(false)
   const [userForm, setUserForm] = useState({ userName: '', email: '', password: '' })
   const [registrarse, setRegistrarse] = useState(false)
+  const [verPersil, setVerPerfil] = useState(false)
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggerCinemaAppUser')
@@ -70,11 +72,24 @@ const App = () => {
     try {
       event.preventDefault();
       const user = await loginUser({ user: username, password })
-      window.localStorage.setItem('loggerCinemaAppUser', JSON.stringify(user))
-      setUser(user)
-      setToken(user.token)
-      setUsername('')
-      setPassword('')
+      if (user && user.error) {
+        setNotificacion({ tipo: 'error', mensaje: user.error })
+        setTimeout(() => {
+          setNotificacion(null)
+        }, 5000)
+      }
+      if (user && !user.error) {
+        window.localStorage.setItem('loggerCinemaAppUser', JSON.stringify(user))
+        setUser(user)
+        setToken(user.token)
+        setNotificacion({ tipo: '', mensaje: `Bienvenido ${username}` })
+        setTimeout(() => {
+          setNotificacion(null)
+        }, 5000)
+        setUsername('')
+        setPassword('')
+      }
+
     } catch (error) {
       console.log(error)
     }
@@ -272,41 +287,53 @@ const App = () => {
       </div>
     );
   }
-  
+
   return (
     <div>
       <div>
-        <p className="nav">Bienvenido {user.username}! logged in <button onClick={handleLogOut}>logout</button></p>
+        <p className="nav">{user.username}! logged in <button onClick={handleLogOut}>logout</button></p>
       </div>
       <div>
         <Notificaciones notificacion={notificacion} />
       </div>
-      <button onClick={() => {
-        if (!mostrarFormularioPelicula) {
-          // Si voy a mostrar el formulario, aseguro de limpiar el estado
-          setPelicula({
-            nombre: '',
-            director: '',
-            lanzamiento: '',
-            genero: '',
-            descripcion: '',
-            imagen: null
-          })
-          setModoEdicion(false)
-        }
-        setMostrarFormularioPelicula(!mostrarFormularioPelicula)
-      }}>
-        {mostrarFormularioPelicula ? 'Cancelar' : 'Crear Película'}
-      </button>
+      <div>
+        <button onClick={() => {
+          if (!mostrarFormularioPelicula) {
+            // Si voy a mostrar el formulario, aseguro de limpiar el estado
+            setPelicula({
+              nombre: '',
+              director: '',
+              lanzamiento: '',
+              genero: '',
+              descripcion: '',
+              imagen: null
+            })
+            setModoEdicion(false)
+          }
+          setMostrarFormularioPelicula(!mostrarFormularioPelicula)
+        }}>
+          {mostrarFormularioPelicula ? 'Cancelar' : 'Crear Película'}
+        </button>
 
-      {mostrarFormularioPelicula && (
-        <PeliculaForm
-          handler={handlerPelicula}
-          handlerFile={handleFileChange}
-          handleSubmit={modoEdicion ? handleEditarSubmit : handleSubmit}
-          pelicula={pelicula}
-        />
-      )}
+        {mostrarFormularioPelicula && (
+          <PeliculaForm
+            handler={handlerPelicula}
+            handlerFile={handleFileChange}
+            handleSubmit={modoEdicion ? handleEditarSubmit : handleSubmit}
+            pelicula={pelicula}
+          />
+        )}
+      </div>
+      <div>
+        <button onClick={() => {
+          setVerPerfil(!verPersil)
+        }}>
+          {verPersil ? 'Volver' : 'Mi perfil'}
+        </button>
+
+        {verPersil && <Perfil perfil={user} />}
+
+      </div>
 
       <div>
         <Pelicula

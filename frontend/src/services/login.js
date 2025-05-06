@@ -7,8 +7,7 @@ const loginUser = async (user) => {
     const response = await axios.post(baseUrl, user)
     return response.data
   } catch (error) {
-    console.error('Error en el login:', error)
-    throw error
+    return { error: error.response?.data?.error}
   }
 }
 
