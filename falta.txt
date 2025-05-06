@@ -1,0 +1,13 @@
+FALTA:
+
+- Configurar formulario de user para editar usuario
+- Poner un alert a la hora de eliminar usuario o pelicula
+- Ruta para obtener peliculas del usuario
+- Vista/Componente de las peliculas que publico el usuario
+- Refactorizar y limpiar codigo
+- Darle estilo con css
+
+ERRORES A CORREGIR:
+
+- No se parece el nombre del creador una vez posteada la pelicula(hay que refrescarla
+  para que aparesca el creador)
