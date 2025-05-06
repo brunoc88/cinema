@@ -9,5 +9,6 @@ FALTA:
 
 ERRORES A CORREGIR:
 
-- No se parece el nombre del creador una vez posteada la pelicula(hay que refrescarla
+- No se aparece el nombre del creador una vez posteada la pelicula(hay que refrescarla
   para que aparesca el creador)
+- no se borra el token del localStorage, paso un dia y seguia almacenado
