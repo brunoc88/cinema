@@ -24,3 +24,7 @@ Content-Type: application/json
 ###
 DELETE http://localhost:3000/user/eliminar/id
 Authorization: Bearer 
+
+###
+GET http://localhost:3000/user/perfil/id
+Authorization: Bearer 

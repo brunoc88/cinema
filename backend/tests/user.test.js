@@ -371,6 +371,53 @@ describe('DELETE /user/eliminar/:id', () => {
   })
 })
 
+describe('GET /user/perfil/:id', () => {
+  test('Obtener datos del usuario', async () => {
+    const usuarios = await getUsers()
+    const id = usuarios[0].id
+
+    const res = await api
+      .get(`/user/perfil/${id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    expect(res.body.perfil).toBeDefined()
+    expect(typeof res.body.perfil).toBe('object')
+    expect(res.body.perfil.userName).toBeDefined() // si esperámos un campo en concreto
+  })
+
+  test('Obtener datos del usuario sin token', async () => {
+    const usuarios = await getUsers()
+    const id = usuarios[0].id
+
+    const res = await api
+      .get(`/user/perfil/${id}`)
+      .expect(401)
+      .expect('Content-Type', /application\/json/)
+
+    expect(res.body.error).toContain('Falta Token!')
+  })
+
+  test('Obtener datos del usuario con un id diferente', async () => {
+    // creo un nuevo user
+    const user = await api
+      .post('/user/alta')
+      .send({ userName: 'albert', email: 'alberwesker@gmail.com', password: 'umbrella' })
+    
+    const usuarios = await getUsers()
+    const id = usuarios[1].id
+
+    const res = await api
+      .get(`/user/perfil/${id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(401)
+      .expect('Content-Type', /application\/json/)
+
+    expect(res.body.error).toContain('No autorizado!')
+  })
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })

@@ -11,6 +11,26 @@ exports.obtenerUsuarios = async (req, res) => {
   }
 }
 
+exports.buscarMiPeril = async (req, res) =>{
+  try {
+    const id = req.params.id
+
+    const perfil = await User.findById(id)
+
+    if(!perfil){
+      return res.status(404).json({error: 'Usuario no encontrado!'})
+    }
+
+    if(perfil.id !== req.user.id){
+      return res.status(401).json({error: 'No autorizado!'})
+    }
+
+    return res.status(200).json({perfil})
+  } catch (error) {
+    return res.status(500).json('Hubo un error', error)
+  }
+}
+
 exports.altaUsuario = async (req, res) => {
   try {
     const { userName, email, password } = req.body
