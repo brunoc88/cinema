@@ -98,8 +98,11 @@ const App = () => {
   }
 
   const handleLogOut = () => {
-    setUser(null);
-    setToken(null);
+    setUser(null)
+    setToken(null)
+    //cerramos todo lo que dejamos abierto
+    setModoEdicion(false)
+    setMostrarFormularioPelicula(false)
     window.localStorage.removeItem('loggerCinemaAppUser');
   }
 
