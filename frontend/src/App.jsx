@@ -5,9 +5,9 @@ import { PeliculaForm } from "./components/PeliculaForm"
 import { UserForm } from "./components/userForm"
 import { Notificaciones } from "./components/Notificaciones"
 import { loginUser } from "./services/login"
-import { Perfil } from "./components/profile"
+import { Perfil } from "./components/Profile"
 import { setToken, getPeliculas, postearPelicula, eliminarPelicula, obtenerPelicula, editarPelicula } from "./services/peliculas"
-import { crearUsuario } from "./services/user"
+import { crearUsuario, setTokenUser, eliminarCuenta } from "./services/user"
 
 const App = () => {
   const [username, setUsername] = useState('')
@@ -35,6 +35,7 @@ const App = () => {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
       setToken(user.token)
+      setTokenUser(user.token)
     }
   }, [])
 
@@ -145,16 +146,24 @@ const App = () => {
 
   const handlerEliminarPelicula = async (id) => {
     try {
-      const res = await eliminarPelicula(id)
-      setPeliculas(prev => prev.filter(pelicula => pelicula.id !== id))
-      setNotificacion({ tipo: 'exito', mensaje: res.message })
-      setTimeout(() => {
-        setNotificacion(null)
-      }, 5000);
+      const confirmar = confirm("¿Estás seguro de querer eliminar esta pelicula?")
+      if (confirmar) {
+        const res = await eliminarPelicula(id)
+        if (res && res.message) {
+          setPeliculas(prev => prev.filter(pelicula => pelicula.id !== id))
+          setNotificacion({ tipo: 'exito', mensaje: res.message })
+          setTimeout(() => {
+            setNotificacion(null)
+          }, 5000)
+        }
+        if(res && res.error){
+          setNotificacion({ tipo: 'error', mensaje: error.response?.data?.error || "Error al eliminar" })
+          setTimeout(() => setNotificacion(null), 5000)
+        }
+      }
+
     } catch (error) {
       console.error(error)
-      setNotificacion({ tipo: 'error', mensaje: error.response?.data?.error || "Error al eliminar" })
-      setTimeout(() => setNotificacion(null), 5000)
     }
   }
 
@@ -257,6 +266,31 @@ const App = () => {
     }
   }
 
+  const handlerEliminarCuenta = async (id) => {
+    try {
+      const confirmar = confirm("¿Estás seguro de que querés eliminar este usuario?")
+      if (confirmar) {
+        const res = await eliminarCuenta(id)
+        if (res && res.exito) {
+          handleLogOut()
+          setNotificacion({ tipo: '', mensaje: res.exito })
+          setTimeout(() => {
+            setNotificacion(null)
+          }, 5000)
+        }
+        if (res && res.error) {
+          setNotificacion({ tipo: 'error', mensaje: res.error })
+          setTimeout(() => {
+            setNotificacion(null)
+          }, 5000)
+        }
+      }
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   if (!user) {
     return (
       <div>
@@ -331,7 +365,7 @@ const App = () => {
           {verPersil ? 'Volver' : 'Mi perfil'}
         </button>
 
-        {verPersil && <Perfil perfil={user} />}
+        {verPersil && <Perfil perfil={user} eliminarCuenta={handlerEliminarCuenta} />}
 
       </div>
 

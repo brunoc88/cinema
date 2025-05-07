@@ -2,13 +2,37 @@ import axios from "axios"
 
 const baseUrl = 'http://localhost:3000/user'
 
-const crearUsuario = async(userForm) =>{
+let token = null
+
+const setTokenUser = newToken => {
+    token = `Bearer ${newToken}`
+}
+
+const crearUsuario = async (userForm) => {
     try {
         const res = await axios.post(`${baseUrl}/alta`, userForm)
         return res.data
     } catch (error) {
-        return { error: error.response?.data.error || 'Error al crear usuario'}
+        return { error: error.response?.data.error || 'Error al crear usuario' }
     }
 }
 
-export {crearUsuario}
+const eliminarCuenta = async (id) => {
+    try {
+        if (!token) {
+            throw new Error('Acceso invalido!')
+        }
+
+        let config = {
+            headers: { Authorization: token }
+        }
+
+        const res = await axios.delete(`${baseUrl}/eliminar/${id}`, config)
+        return res.data
+    } catch (error) {
+        return error.response?.data.error
+    }
+
+}
+
+export { crearUsuario, setTokenUser, eliminarCuenta }

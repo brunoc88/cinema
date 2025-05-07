@@ -1,7 +1,6 @@
 FALTA:
 
 - Configurar formulario de user para editar usuario
-- Poner un alert a la hora de eliminar usuario o pelicula
 - Ruta para obtener peliculas del usuario
 - Vista/Componente de las peliculas que publico el usuario
 - Refactorizar y limpiar codigo
@@ -12,3 +11,7 @@ ERRORES A CORREGIR:
 - No se aparece el nombre del creador una vez posteada la pelicula(hay que refrescarla
   para que aparesca el creador)
 - no se borra el token del localStorage, paso un dia y seguia almacenado
+
+EXTRA
+
+- Usar prop child
