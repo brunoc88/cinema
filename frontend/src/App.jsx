@@ -156,7 +156,7 @@ const App = () => {
             setNotificacion(null)
           }, 5000)
         }
-        if(res && res.error){
+        if (res && res.error) {
           setNotificacion({ tipo: 'error', mensaje: error.response?.data?.error || "Error al eliminar" })
           setTimeout(() => setNotificacion(null), 5000)
         }
@@ -359,24 +359,32 @@ const App = () => {
         )}
       </div>
       <div>
-        <button onClick={() => {
-          setVerPerfil(!verPersil)
-        }}>
-          {verPersil ? 'Volver' : 'Mi perfil'}
-        </button>
+        {!mostrarFormularioPelicula && (
+          <button onClick={() => {
+            setVerPerfil(!verPersil)
+          }}>
+            {verPersil ? 'Volver' : 'Mi perfil'}
+          </button>
+        )}
 
-        {verPersil && <Perfil perfil={user} eliminarCuenta={handlerEliminarCuenta} />}
-
+        {verPersil && !mostrarFormularioPelicula && (
+          <Perfil perfil={user} eliminarCuenta={handlerEliminarCuenta} />
+        )}
       </div>
+
 
       <div>
-        <Pelicula
-          peliculas={peliculas}
-          user={user}
-          eliminarPelicula={handlerEliminarPelicula}
-          editar={handlerObtenerPelicula} />
+        {!verPersil && !mostrarFormularioPelicula ? (
+          <Pelicula
+            peliculas={peliculas}
+            user={user}
+            eliminarPelicula={handlerEliminarPelicula}
+            editar={handlerObtenerPelicula}
+          />
+        ) : (
+          ''
+        )}
       </div>
-
     </div>
   )
 }
