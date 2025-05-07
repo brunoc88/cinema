@@ -35,4 +35,20 @@ const eliminarCuenta = async (id) => {
 
 }
 
-export { crearUsuario, setTokenUser, eliminarCuenta }
+const misDatos = async (id) =>{
+    try {
+        if (!token) {
+            throw new Error('Acceso invalido!')
+        }
+
+        let config = {
+            headers: { Authorization: token }
+        }
+
+        const res = await axios.delete(`${baseUrl}/perfil/${id}`, config)
+        return res.data
+    } catch (error) {
+        return error.response?.data.error 
+    }
+}
+export { crearUsuario, setTokenUser, eliminarCuenta, misDatos }

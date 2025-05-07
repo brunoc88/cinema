@@ -7,7 +7,7 @@ import { Notificaciones } from "./components/Notificaciones"
 import { loginUser } from "./services/login"
 import { Perfil } from "./components/Profile"
 import { setToken, getPeliculas, postearPelicula, eliminarPelicula, obtenerPelicula, editarPelicula } from "./services/peliculas"
-import { crearUsuario, setTokenUser, eliminarCuenta } from "./services/user"
+import { crearUsuario, setTokenUser, eliminarCuenta, misDatos } from "./services/user"
 
 const App = () => {
   const [username, setUsername] = useState('')
@@ -28,6 +28,7 @@ const App = () => {
   const [userForm, setUserForm] = useState({ userName: '', email: '', password: '' })
   const [registrarse, setRegistrarse] = useState(false)
   const [verPersil, setVerPerfil] = useState(false)
+  const [editarUser, setEditarUsuario] = useState(false)
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggerCinemaAppUser')
@@ -368,11 +369,12 @@ const App = () => {
         )}
 
         {verPersil && !mostrarFormularioPelicula && (
-          <Perfil perfil={user} eliminarCuenta={handlerEliminarCuenta} />
+          <Perfil perfil={user} eliminarCuenta={handlerEliminarCuenta} editar={setEditarUsuario} />
         )}
       </div>
-
-
+      <div>
+        {editarUser?<UserForm  />:''}
+      </div>
       <div>
         {!verPersil && !mostrarFormularioPelicula ? (
           <Pelicula
