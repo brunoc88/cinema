@@ -33,8 +33,7 @@ exports.altaPelicula = async (req, res) => {
     await nuevaPelicula.save()
 
     // Popula el usuario antes de devolver la película
-    const peliculaConUsuario = await Pelicula.findById(nuevaPelicula._id).populate('user')
-    
+    await Pelicula.findById(nuevaPelicula._id).populate('user')
     req.user.peliculas = req.user.peliculas.concat(nuevaPelicula._id)
     await req.user.save()
 
@@ -152,13 +151,13 @@ exports.encontrarPelicula = async (req, res) => {
 
     const pelicula = await Pelicula.findById(id)
 
-    if(!pelicula){
-      return res.status(404).json({error: 'No se encontro la pelicula!'})
+    if (!pelicula) {
+      return res.status(404).json({ error: 'No se encontro la pelicula!'})
     }
 
     return res.status(200).json(pelicula)
   } catch (error) {
-    return res.status(500).json({error: 'Hubo un error al obtener pelicula', details: error.message })
+    return res.status(500).json({ error: 'Hubo un error al obtener pelicula', details: error.message })
   }
 }
 
