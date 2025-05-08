@@ -1,6 +1,6 @@
 const PeliculaForm = ({ handler, handlerFile, handleSubmit, pelicula, editar = false }) => {
     return (
-        <form onSubmit={handleSubmit} method="post" encType="multipart/form-data">
+        <form onSubmit={handleSubmit} encType="multipart/form-data">
             <div>
                 Nombre:
                 <input type="text" name="nombre" onChange={handler} value={pelicula.nombre} />

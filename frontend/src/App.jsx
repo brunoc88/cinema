@@ -7,7 +7,7 @@ import { Notificaciones } from "./components/Notificaciones"
 import { loginUser } from "./services/login"
 import { Perfil } from "./components/Profile"
 import { setToken, getPeliculas, postearPelicula, eliminarPelicula, obtenerPelicula, editarPelicula } from "./services/peliculas"
-import { crearUsuario, setTokenUser, eliminarCuenta, misDatos } from "./services/user"
+import { crearUsuario, setTokenUser, eliminarCuenta, misDatos, editarMyUser } from "./services/user"
 
 const App = () => {
   const [username, setUsername] = useState('')
@@ -241,6 +241,7 @@ const App = () => {
       ...prev,
       [name]: value
     }));
+    console.log(userForm)
   }
 
 
@@ -295,6 +296,47 @@ const App = () => {
     }
   }
 
+  const handlerObtenerDatosUser = async (id) => {
+    try {
+      const res = await misDatos(id)
+      if(res && res.error){
+        setNotificacion({tipo:'error', mensaje: res.error})
+        setTimeout(() => {
+          setNotificacion(null)
+        }, 5000);
+      }
+
+      if(res && !res.error){
+        setUserForm(res.perfil)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handlerEditarUsuario = async (event) => {
+    try {
+      event.preventDefault()
+      const res = await editarMyUser(user.id, userForm)
+      console.log("respues", res)
+      if(res && res.exito){
+        setNotificacion({tipo:'exito', mensaje:res.exito})
+        setTimeout(() => {
+          setNotificacion(null)
+        }, 5000);
+        handleLogOut()
+      }
+      else{
+        setNotificacion({tipo:'error', mensaje: res? res : 'se produjo un error'})
+        setTimeout(() => {
+          setNotificacion(null)
+        }, 5000);
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   if (!user) {
     return (
       <div>
@@ -312,8 +354,8 @@ const App = () => {
             <UserForm
               handlerUsuario={handlerUsuario}
               handlerSubmit={handlerSubmitUser}
-              user={userForm}
               setRegistrarse={setRegistrarse}
+              user={userForm}
             />
           )}
         </div>
@@ -372,11 +414,11 @@ const App = () => {
         )}
 
         {verPersil && !mostrarFormularioPelicula && (
-          <Perfil perfil={user} eliminarCuenta={handlerEliminarCuenta} editar={setEditarUsuario} />
+          <Perfil perfil={user} eliminarCuenta={handlerEliminarCuenta} editar={setEditarUsuario} obtenerUser = {handlerObtenerDatosUser} />
         )}
       </div>
       <div>
-        {editarUser?<UserForm  />:''}
+        {editarUser?<UserForm  handlerUsuario={handlerUsuario} user={userForm} setRegistrarse={setRegistrarse} handleEditarSubmit={handlerEditarUsuario} editarUser = {editarUser}/>:''}
       </div>
       <div>
         {!verPersil && !mostrarFormularioPelicula ? (

@@ -90,16 +90,16 @@ exports.editarPelicula = async (req, res) => {
       return res.status(404).json({ error: 'Película no encontrada' })
     }
 
-    const errores = verificarDatos(req.body)
-
-    if (errores.length > 0) {
-      return res.status(400).json({ error: errores })
-    }
-
     const cambios = verificarCambios(req.body, pelicula)
 
     if (cambios) {
       return res.status(400).json({ error: cambios })
+    }
+
+    const errores = verificarDatos(req.body)
+
+    if (errores.length > 0) {
+      return res.status(400).json({ error: errores })
     }
 
     // Verificar si ya existe una película con el nombre proporcionado

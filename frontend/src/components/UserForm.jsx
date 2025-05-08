@@ -1,7 +1,7 @@
-const UserForm = ({handlerUsuario, handlerSubmit, user, setRegistrarse}) =>{
+const UserForm = ({handlerUsuario, handlerSubmit, user, setRegistrarse, handleEditarSubmit, editarUser}) =>{
     return(
         <div>
-            <form onSubmit={handlerSubmit} method="post">
+            <form onSubmit={!editarUser?handlerSubmit : handleEditarSubmit}>
                 <div>
                     Nombre de usuario:
                     <input type="text" name = "userName" onChange={handlerUsuario} value={user? user.userName : ''}/>
@@ -12,7 +12,7 @@ const UserForm = ({handlerUsuario, handlerSubmit, user, setRegistrarse}) =>{
                 </div>
                 <div>
                     Password:
-                    <input type="password" name = "password" onChange={handlerUsuario} value={user? user.password : ''}/>
+                    <input type="password" name = "password" onChange={handlerUsuario}/>
                 </div>
                 <div>
                     <button type="submit">Enviar</button>

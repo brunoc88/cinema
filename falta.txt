@@ -1,6 +1,6 @@
 FALTA:
 
-- Configurar formulario de user para editar usuario
+- Realizar el like
 - Ruta para obtener peliculas del usuario
 - Vista/Componente de las peliculas que publico el usuario
 - Refactorizar y limpiar codigo
@@ -11,6 +11,9 @@ ERRORES A CORREGIR:
 - No se aparece el nombre del creador una vez posteada la pelicula(hay que refrescarla
   para que aparesca el creador)
 - no se borra el token del localStorage, paso un dia y seguia almacenado
+- revisar porque quedan guardados los id de peliculas que el usuario borro
+- si vamos a editar y le damos a enviar sin ningun cambio me la guarda cuando no deberia ser asi
+- corregir el cancelar en modo de edicion user
 
 EXTRA
 

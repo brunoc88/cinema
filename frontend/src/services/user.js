@@ -45,10 +45,27 @@ const misDatos = async (id) =>{
             headers: { Authorization: token }
         }
 
-        const res = await axios.delete(`${baseUrl}/perfil/${id}`, config)
+        const res = await axios.get(`${baseUrl}/perfil/${id}`, config)
         return res.data
     } catch (error) {
         return error.response?.data.error 
     }
 }
-export { crearUsuario, setTokenUser, eliminarCuenta, misDatos }
+
+const editarMyUser = async (id, user) => {
+    try {
+        if (!token) {
+            throw new Error('Acceso invalido!')
+        }
+
+        let config = {
+            headers: { Authorization: token }
+        }
+
+        const res = await axios.put(`${baseUrl}/editar/${id}`, user, config)
+        return res.data
+    } catch (error) {
+        return error.response?.data.error
+    }
+}
+export { crearUsuario, setTokenUser, eliminarCuenta, misDatos, editarMyUser }
