@@ -1,5 +1,5 @@
 FALTA:
-
+- Usar filter para buscar peliculas con un for filter
 - Vista/Componente de las peliculas que publico el usuario
 - modificar la condicion del componente Pelicula si es para ver las peliculas del usuario o todas las del sitio
 - Refactorizar y limpiar codigo
