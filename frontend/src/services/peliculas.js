@@ -94,6 +94,21 @@ const editarPelicula = async (id, formData) => {
     }
 }
 
+const darLike = async (id) =>{
+    try {
+        if (!token) throw new Error('Acceso inválido!')
+        const config = {
+            headers: {
+                Authorization: token,
+                'Content-Type': 'multipart/form-data'
+            }
+        }
+        const res = await axios.patch(`${baseUrl}/like/${id}`, {}, config)
+        return res.data
+    } catch (error) {
+        return { error: error.response?.data?.error}
+    }
+}
 
 export {
     getPeliculas,
@@ -101,5 +116,6 @@ export {
     postearPelicula,
     eliminarPelicula,
     obtenerPelicula,
-    editarPelicula
+    editarPelicula,
+    darLike
 }

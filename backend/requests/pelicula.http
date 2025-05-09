@@ -18,7 +18,7 @@ DELETE http://localhost:3000/pelicula/baja/id
 Authorization: Bearer 
 
 ###
-PUT http://localhost:3000/pelicula/editar/6807d1dd1ac738776a72a1b7
+PUT http://localhost:3000/pelicula/editar/id
 Authorization: Bearer 
 Content-Type: application/json
 

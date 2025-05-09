@@ -1,6 +1,5 @@
 FALTA:
 
-- Realizar el like
 - Ruta para obtener peliculas del usuario
 - Vista/Componente de las peliculas que publico el usuario
 - Refactorizar y limpiar codigo
@@ -18,3 +17,4 @@ ERRORES A CORREGIR:
 EXTRA
 
 - Usar prop child
+- preguntar si estoy usando toggable

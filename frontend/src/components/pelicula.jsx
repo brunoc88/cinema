@@ -1,4 +1,4 @@
-const Pelicula = ({ peliculas, user, eliminarPelicula, editar }) => {
+const Pelicula = ({ peliculas, user, eliminarPelicula, editar, handlerLike }) => {
 
     return (
         <div>
@@ -15,7 +15,7 @@ const Pelicula = ({ peliculas, user, eliminarPelicula, editar }) => {
                     <p>Lanzamiento: {p.lanzamiento}</p>
                     <p>Descripción: {p.descripcion}</p>
                     <p>Creador: {p.user.userName?p.user.userName:'Usuario eliminado'}</p>
-                    <p>Likes: {p.likes}</p>
+                    <p>Likes: {p.likes} <button onClick={()=>{handlerLike(p.id)}}>Like!</button></p>
                     <button  className="editar" onClick={()=>editar(p.id)}>Editar</button>
                     <div>
                         {user.username === p.user.userName && (

@@ -12,4 +12,6 @@ router.put('/editar/:id', userExtractor, userController.editarUsuario)
 
 router.delete('/eliminar/:id', userExtractor, userController.eliminarUsuario)
 
+router.get('/mispost/:id', userExtractor, userController.misPublicaciones)
+
 module.exports = router

@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt')
 const User = require('../models/user')
 const logger = require('../utils/loggers')
+const Pelicula = require('../models/pelicula')
 
 exports.obtenerUsuarios = async (req, res) => {
   try {
@@ -110,6 +111,16 @@ exports.eliminarUsuario = async (req, res) => {
     return res.status(200).json({ exito: 'Usuario eliminado!' })
   } catch (error) {
     return res.status(500).json({ error: 'Problemas al eliminar usuario', details: error.message })
+  }
+}
+
+exports.misPublicaciones = async (req, res) => {
+  try {
+    const { id } = req.params
+    const peliculas = await Pelicula.find({ user: id })
+    return res.status(200).json({ peliculas })
+  } catch (error) {
+    return res.status(500).json({ error: `Sucedio un error ${error}` })
   }
 }
 

@@ -6,7 +6,7 @@ import { UserForm } from "./components/userForm"
 import { Notificaciones } from "./components/Notificaciones"
 import { loginUser } from "./services/login"
 import { Perfil } from "./components/Profile"
-import { setToken, getPeliculas, postearPelicula, eliminarPelicula, obtenerPelicula, editarPelicula } from "./services/peliculas"
+import { setToken, getPeliculas, postearPelicula, eliminarPelicula, obtenerPelicula, editarPelicula, darLike } from "./services/peliculas"
 import { crearUsuario, setTokenUser, eliminarCuenta, misDatos, editarMyUser } from "./services/user"
 
 const App = () => {
@@ -299,14 +299,14 @@ const App = () => {
   const handlerObtenerDatosUser = async (id) => {
     try {
       const res = await misDatos(id)
-      if(res && res.error){
-        setNotificacion({tipo:'error', mensaje: res.error})
+      if (res && res.error) {
+        setNotificacion({ tipo: 'error', mensaje: res.error })
         setTimeout(() => {
           setNotificacion(null)
         }, 5000);
       }
 
-      if(res && !res.error){
+      if (res && !res.error) {
         setUserForm(res.perfil)
       }
     } catch (error) {
@@ -319,15 +319,15 @@ const App = () => {
       event.preventDefault()
       const res = await editarMyUser(user.id, userForm)
       console.log("respues", res)
-      if(res && res.exito){
-        setNotificacion({tipo:'exito', mensaje:res.exito})
+      if (res && res.exito) {
+        setNotificacion({ tipo: 'exito', mensaje: res.exito })
         setTimeout(() => {
           setNotificacion(null)
         }, 5000);
         handleLogOut()
       }
-      else{
-        setNotificacion({tipo:'error', mensaje: res? res : 'se produjo un error'})
+      else {
+        setNotificacion({ tipo: 'error', mensaje: res ? res : 'se produjo un error' })
         setTimeout(() => {
           setNotificacion(null)
         }, 5000);
@@ -336,6 +336,32 @@ const App = () => {
       console.log(error)
     }
   }
+
+  const handlerLike = async (id) => {
+    try {
+      const res = await darLike(id)
+
+      if (res && res.message && typeof res.likes === 'number') {
+        setPeliculas(prev =>
+          prev.map(p => (p.id === id ? { ...p, likes: res.likes } : p))
+        )
+        setNotificacion({ tipo: '', mensaje: res.message })
+        setTimeout(() => {
+          setNotificacion(null)
+        }, 5000)
+      }
+
+      if (res && res.error) {
+        setNotificacion({ tipo: 'error', mensaje: res.error })
+        setTimeout(() => {
+          setNotificacion(null)
+        }, 5000)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
 
   if (!user) {
     return (
@@ -414,11 +440,11 @@ const App = () => {
         )}
 
         {verPersil && !mostrarFormularioPelicula && (
-          <Perfil perfil={user} eliminarCuenta={handlerEliminarCuenta} editar={setEditarUsuario} obtenerUser = {handlerObtenerDatosUser} />
+          <Perfil perfil={user} eliminarCuenta={handlerEliminarCuenta} editar={setEditarUsuario} obtenerUser={handlerObtenerDatosUser} />
         )}
       </div>
       <div>
-        {editarUser?<UserForm  handlerUsuario={handlerUsuario} user={userForm} setRegistrarse={setRegistrarse} handleEditarSubmit={handlerEditarUsuario} editarUser = {editarUser}/>:''}
+        {editarUser ? <UserForm handlerUsuario={handlerUsuario} user={userForm} setRegistrarse={setRegistrarse} handleEditarSubmit={handlerEditarUsuario} editarUser={editarUser} /> : ''}
       </div>
       <div>
         {!verPersil && !mostrarFormularioPelicula ? (
@@ -427,6 +453,7 @@ const App = () => {
             user={user}
             eliminarPelicula={handlerEliminarPelicula}
             editar={handlerObtenerPelicula}
+            handlerLike={handlerLike}
           />
         ) : (
           ''
