@@ -1,7 +1,7 @@
 FALTA:
 
-- Ruta para obtener peliculas del usuario
 - Vista/Componente de las peliculas que publico el usuario
+- modificar la condicion del componente Pelicula si es para ver las peliculas del usuario o todas las del sitio
 - Refactorizar y limpiar codigo
 - Darle estilo con css
 
