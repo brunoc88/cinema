@@ -29,6 +29,8 @@ const App = () => {
   const [registrarse, setRegistrarse] = useState(false)
   const [verPersil, setVerPerfil] = useState(false)
   const [editarUser, setEditarUsuario] = useState(false)
+  const [filter, setFilter] = useState('')
+  const [peliculasFilter, setPeliculasFilter] = useState(null)
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggerCinemaAppUser')
@@ -52,6 +54,7 @@ const App = () => {
         })
     }
   }, [user])
+
 
 
   const handlerPelicula = (event) => {
@@ -362,6 +365,15 @@ const App = () => {
     }
   }
 
+  const handlerFilter = (event) => {
+    const value = event.target.value
+    setFilter(value)
+    setPeliculasFilter(
+      peliculas.filter(p => p.nombre.toLowerCase().includes(value.toLowerCase().trim()))
+    )
+    console.log("FILTRADAS",peliculasFilter)
+  }
+
 
   if (!user) {
     return (
@@ -401,6 +413,15 @@ const App = () => {
       </div>
       <div>
         <Notificaciones notificacion={notificacion} />
+      </div>
+      <div>
+        <input
+          type="text"
+          value={filter}
+          onChange={handlerFilter}
+          placeholder="Buscar película por nombre"
+        />
+
       </div>
       <div>
         <button onClick={() => {
@@ -449,7 +470,7 @@ const App = () => {
       <div>
         {!verPersil && !mostrarFormularioPelicula ? (
           <Pelicula
-            peliculas={peliculas}
+            peliculas={peliculasFilter? peliculasFilter : peliculas}
             user={user}
             eliminarPelicula={handlerEliminarPelicula}
             editar={handlerObtenerPelicula}

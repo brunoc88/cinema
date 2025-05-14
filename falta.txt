@@ -1,5 +1,4 @@
 FALTA:
-- Usar filter para buscar peliculas con un for filter
 - Vista/Componente de las peliculas que publico el usuario
 - modificar la condicion del componente Pelicula si es para ver las peliculas del usuario o todas las del sitio
 - Refactorizar y limpiar codigo
@@ -13,7 +12,7 @@ ERRORES A CORREGIR:
 - revisar porque quedan guardados los id de peliculas que el usuario borro
 - si vamos a editar y le damos a enviar sin ningun cambio me la guarda cuando no deberia ser asi
 - corregir el cancelar en modo de edicion user
-
+- No se actualiza contador de liker cuando se buscar por filtro
 EXTRA
 
 - Usar prop child
