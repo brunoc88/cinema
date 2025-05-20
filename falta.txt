@@ -1,6 +1,4 @@
 FALTA:
-- Vista/Componente de las peliculas que publico el usuario
-- modificar la condicion del componente Pelicula si es para ver las peliculas del usuario o todas las del sitio
 - Refactorizar y limpiar codigo
 - Darle estilo con css
 
@@ -8,7 +6,6 @@ ERRORES A CORREGIR:
 
 - No se aparece el nombre del creador una vez posteada la pelicula(hay que refrescarla
   para que aparesca el creador)
-- no se borra el token del localStorage, paso un dia y seguia almacenado
 - revisar porque quedan guardados los id de peliculas que el usuario borro
 - si vamos a editar y le damos a enviar sin ningun cambio me la guarda cuando no deberia ser asi
 - corregir el cancelar en modo de edicion user

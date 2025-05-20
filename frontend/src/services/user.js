@@ -68,4 +68,20 @@ const editarMyUser = async (id, user) => {
         return error.response?.data.error
     }
 }
-export { crearUsuario, setTokenUser, eliminarCuenta, misDatos, editarMyUser }
+
+const misPost = async (id) =>{
+    try {
+        if (!token) {
+            throw new Error('Acceso invalido!')
+        }
+        let config = {
+            headers: { Authorization: token }
+        }
+        const res = await axios.get(`${baseUrl}/mispost/${id}`, config)
+        return res.data
+    } catch (error) {
+        return error.response?.data.error
+    }
+}
+
+export { crearUsuario, setTokenUser, eliminarCuenta, misDatos, editarMyUser, misPost }

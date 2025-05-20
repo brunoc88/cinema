@@ -1,4 +1,4 @@
-const Perfil = ({perfil, eliminarCuenta, editar, obtenerUser}) => {
+const Perfil = ({perfil, eliminarCuenta, editar, obtenerUser, misPost, verMisPost}) => {
     return (
         <div>
             <div>
@@ -7,7 +7,7 @@ const Perfil = ({perfil, eliminarCuenta, editar, obtenerUser}) => {
                 <p>Email: {perfil.email}</p>
             </div>
             <div>
-                <button>Mis publicaciones</button>
+                <button onClick={()=>{verMisPost(true),misPost(perfil.id)}}>Mis publicaciones</button>
                 <button onClick={()=>{editar(true), obtenerUser(perfil.id)}}>Editar</button>
                 <button onClick={()=>{eliminarCuenta(perfil.id)}}>Eliminar Cuenta</button>
             </div>

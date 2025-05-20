@@ -7,7 +7,7 @@ import { Notificaciones } from "./components/Notificaciones"
 import { loginUser } from "./services/login"
 import { Perfil } from "./components/Profile"
 import { setToken, getPeliculas, postearPelicula, eliminarPelicula, obtenerPelicula, editarPelicula, darLike } from "./services/peliculas"
-import { crearUsuario, setTokenUser, eliminarCuenta, misDatos, editarMyUser } from "./services/user"
+import { crearUsuario, setTokenUser, eliminarCuenta, misDatos, editarMyUser, misPost } from "./services/user"
 
 const App = () => {
   const [username, setUsername] = useState('')
@@ -31,6 +31,8 @@ const App = () => {
   const [editarUser, setEditarUsuario] = useState(false)
   const [filter, setFilter] = useState('')
   const [peliculasFilter, setPeliculasFilter] = useState(null)
+  const [verMisPost, setVerMisPost] = useState(null)
+  const [misPeliculas, setMisPeliculas] = useState(null)
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggerCinemaAppUser')
@@ -374,6 +376,20 @@ const App = () => {
     console.log("FILTRADAS",peliculasFilter)
   }
 
+  const handlerMyPosts = async(id) =>{
+    try {
+      const res = await misPost(id)
+      setMisPeliculas(res.peliculas)
+      if(res && res.error){
+        setNotificacion({tipo: 'error', mensaje: res.error})
+        setTimeout(() => {
+          setNotificacion(null)
+        }, 5000);
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   if (!user) {
     return (
@@ -461,7 +477,7 @@ const App = () => {
         )}
 
         {verPersil && !mostrarFormularioPelicula && (
-          <Perfil perfil={user} eliminarCuenta={handlerEliminarCuenta} editar={setEditarUsuario} obtenerUser={handlerObtenerDatosUser} />
+          <Perfil perfil={user} eliminarCuenta={handlerEliminarCuenta} editar={setEditarUsuario} obtenerUser={handlerObtenerDatosUser} misPost = {handlerMyPosts} verMisPost = {setVerMisPost}/>
         )}
       </div>
       <div>
@@ -479,6 +495,15 @@ const App = () => {
         ) : (
           ''
         )}
+      </div>
+      <div>
+        {verMisPost?<Pelicula
+            peliculas={misPeliculas}
+            user={user}
+            eliminarPelicula={handlerEliminarPelicula}
+            editar={handlerObtenerPelicula}
+            handlerLike={handlerLike}
+          />:''}
       </div>
     </div>
   )
