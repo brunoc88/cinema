@@ -404,7 +404,7 @@ describe('GET /user/perfil/:id', () => {
     const user = await api
       .post('/user/alta')
       .send({ userName: 'albert', email: 'alberwesker@gmail.com', password: 'umbrella' })
-    
+
     const usuarios = await getUsers()
     const id = usuarios[1].id
 
@@ -415,6 +415,19 @@ describe('GET /user/perfil/:id', () => {
       .expect('Content-Type', /application\/json/)
 
     expect(res.body.error).toContain('No autorizado!')
+  })
+})
+
+describe('GET /user/mispost/:id', () => {
+  test('Obtener las publicacions del usuario', async () => {
+    const users = await getUsers()
+    const id = users[0].id
+
+    const res = await api
+      .get(`/user/mispost/${id}`)
+      .expect(200)
+      .set('Authorization', `Bearer ${token}`)
+      .expect('Content-Type', /application\/json/)
   })
 })
 
