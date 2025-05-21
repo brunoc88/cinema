@@ -1,4 +1,5 @@
 const Pelicula = require('../models/pelicula')
+const Usuario = require('../models/user')
 
 exports.altaPelicula = async (req, res) => {
   try {
@@ -61,6 +62,10 @@ exports.bajarPelicula = async (req, res) => {
 
     const pelicula = await Pelicula.findById(id)
 
+    if (!pelicula) {
+      return res.status(404).json({ error: 'Pelicula no encontrada' })
+    }
+
     if (pelicula.user.toString() !== req.user.id) {
       return res.status(401).json({
         error: 'No tienes autorizacion!',
@@ -69,10 +74,16 @@ exports.bajarPelicula = async (req, res) => {
     }
 
     const peliculaEliminada = await Pelicula.findByIdAndDelete(id)
+
     if (!peliculaEliminada) {
       return res.status(404).json({ error: 'Pelicula no encontrada' })
     }
 
+    //para eliminar los id de pelicuas en el array del usuario
+    await Usuario.updateMany(
+      { peliculas: id },
+      { $pull: { peliculas: id } }
+    )
     return res.status(200).json({ message: 'Pelicula eliminada con éxito!' })
   } catch (error) {
     return res.status(500).json({ error: 'Hubo un problema', details: error.message })
@@ -152,7 +163,7 @@ exports.encontrarPelicula = async (req, res) => {
     const pelicula = await Pelicula.findById(id)
 
     if (!pelicula) {
-      return res.status(404).json({ error: 'No se encontro la pelicula!'})
+      return res.status(404).json({ error: 'No se encontro la pelicula!' })
     }
 
     return res.status(200).json(pelicula)

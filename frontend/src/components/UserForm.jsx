@@ -1,4 +1,4 @@
-const UserForm = ({handlerUsuario, handlerSubmit, user, setRegistrarse, handleEditarSubmit, editarUser}) =>{
+const UserForm = ({handlerUsuario, handlerSubmit, user, setRegistrarse, handleEditarSubmit, editarUser, setEditarUsuario}) =>{
     return(
         <div>
             <form onSubmit={!editarUser?handlerSubmit : handleEditarSubmit}>
@@ -16,7 +16,7 @@ const UserForm = ({handlerUsuario, handlerSubmit, user, setRegistrarse, handleEd
                 </div>
                 <div>
                     <button type="submit">Enviar</button>
-                    <button onClick={()=>setRegistrarse(false)}>Cancelar</button>
+                    <button onClick={()=>{setRegistrarse(false), setEditarUsuario(false)}}>Cancelar</button>
                 </div>
             </form>
         </div>

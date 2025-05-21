@@ -4,12 +4,18 @@ FALTA:
 
 ERRORES A CORREGIR:
 
-- No se aparece el nombre del creador una vez posteada la pelicula(hay que refrescarla
-  para que aparesca el creador)
-- revisar porque quedan guardados los id de peliculas que el usuario borro
 - si vamos a editar y le damos a enviar sin ningun cambio me la guarda cuando no deberia ser asi
-- corregir el cancelar en modo de edicion user
-- No se actualiza contador de liker cuando se buscar por filtro
+- cuando voy a ver mis post me los muestras y cuando piso volver no los muestras pero si otro usuario hace la misma accion le queda 
+  LOS POST DEL ANTERIOS USUARIO A LA VISTA
+- cuando busco por filtro la pelicula me permite editarla o darle like, pero no se ven los cambios salvo que refresque y me manda el index
+
+otra cosa que me paso es que elimine una cuenta pero deje el form de editarla y despues de hacer el logout y iniciar con otra cuenta
+el form de editar usuario contenia los datos de la cuenta eliminada
+
+otro problema es que si elimino a ese usuario y si ha hecho una pelicula me aparece que no puede leer la propiedad userName
+
+si voy a editar una pelicula y le doy a enviar pero no modifico los valores me dice que la pelicula a sido modificada
+cuando en el backend lo configure para que salte un mensaje de "no hay cambios"
 EXTRA
 
 - Usar prop child
