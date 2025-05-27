@@ -8,7 +8,7 @@ import { loginUser } from "./services/login"
 import { Perfil } from "./components/Profile"
 import { setToken, getPeliculas, postearPelicula, eliminarPelicula, obtenerPelicula, editarPelicula, darLike } from "./services/peliculas"
 import { crearUsuario, setTokenUser, eliminarCuenta, misDatos, editarMyUser, misPost } from "./services/user"
-import { set } from "mongoose"
+
 
 const App = () => {
   const [username, setUsername] = useState('')
@@ -26,7 +26,7 @@ const App = () => {
   const [mostrarFormularioPelicula, setMostrarFormularioPelicula] = useState(false)
   const [notificacion, setNotificacion] = useState(null)
   const [modoEdicion, setModoEdicion] = useState(false)
-  const [userForm, setUserForm] = useState({ userName: '', email: '', password: '' })
+  const [userForm, setUserForm] = useState(null)
   const [registrarse, setRegistrarse] = useState(false)
   const [verPerfil, setVerPerfil] = useState(false)
   const [editarUser, setEditarUsuario] = useState(false)
@@ -90,6 +90,7 @@ const App = () => {
         window.localStorage.setItem('loggerCinemaAppUser', JSON.stringify(user))
         setUser(user)
         setToken(user.token)
+        setTokenUser(user.token)
         setNotificacion({ tipo: '', mensaje: `Bienvenido ${username}` })
         setTimeout(() => {
           setNotificacion(null)
@@ -106,52 +107,58 @@ const App = () => {
   const handleLogOut = () => {
     setUser(null)
     setToken(null)
+    setTokenUser(null)
     //cerramos todo lo que dejamos abierto
+    setUserForm(null)
     setModoEdicion(false)
+    setEditarUsuario(false)
     setMostrarFormularioPelicula(false)
+    setVerPerfil(false)
+    setVerMisPost(false)
+    setMisPeliculas(null)
     window.localStorage.removeItem('loggerCinemaAppUser');
   }
 
   const handleSubmit = async (event) => {
-  try {
-    event.preventDefault()
-    const formData = new FormData()
-    formData.append('nombre', pelicula.nombre)
-    formData.append('director', pelicula.director)
-    formData.append('genero', pelicula.genero)
-    formData.append('descripcion', pelicula.descripcion)
-    formData.append('lanzamiento', pelicula.lanzamiento)
-    formData.append('imagen', pelicula.imagen)
+    try {
+      event.preventDefault()
+      const formData = new FormData()
+      formData.append('nombre', pelicula.nombre)
+      formData.append('director', pelicula.director)
+      formData.append('genero', pelicula.genero)
+      formData.append('descripcion', pelicula.descripcion)
+      formData.append('lanzamiento', pelicula.lanzamiento)
+      formData.append('imagen', pelicula.imagen)
 
-    const nueva = await postearPelicula(formData)
+      const nueva = await postearPelicula(formData)
 
-    if (nueva && nueva.error) {
-      setNotificacion({ tipo: 'error', mensaje: nueva.error })
+      if (nueva && nueva.error) {
+        setNotificacion({ tipo: 'error', mensaje: nueva.error })
+        setTimeout(() => setNotificacion(null), 5000)
+        return
+      }
+
+      setNotificacion({ tipo: 'exito', mensaje: nueva.Mensaje })
       setTimeout(() => setNotificacion(null), 5000)
-      return
+
+      // recargar películas con usuario poblado
+      const peliculasActualizadas = await getPeliculas()
+      setPeliculas(peliculasActualizadas.sort((a, b) => b.nombre.localeCompare(a.nombre)))
+
+      setMostrarFormularioPelicula(false)
+      setPelicula({
+        nombre: '',
+        director: '',
+        lanzamiento: '',
+        genero: '',
+        descripcion: '',
+        imagen: null
+      })
+
+    } catch (error) {
+      console.error(error)
     }
-
-    setNotificacion({ tipo: 'exito', mensaje: nueva.Mensaje })
-    setTimeout(() => setNotificacion(null), 5000)
-
-    // recargar películas con usuario poblado
-    const peliculasActualizadas = await getPeliculas()
-    setPeliculas(peliculasActualizadas.sort((a,b) => b.nombre.localeCompare(a.nombre)))
-
-    setMostrarFormularioPelicula(false)
-    setPelicula({
-      nombre: '',
-      director: '',
-      lanzamiento: '',
-      genero: '',
-      descripcion: '',
-      imagen: null
-    })
-
-  } catch (error) {
-    console.error(error)
   }
-}
 
 
   const handlerEliminarPelicula = async (id) => {
@@ -262,13 +269,16 @@ const App = () => {
           setNotificacion(null)
         }, 5000)
       }
-      setUser(res.user)
+      const username = userForm.userName
+      const password = userForm.password
       setNotificacion({ tipo: 'exito', mensaje: res.message })
-      setRegistrarse({
-        userName: '',
-        email: '',
-        password: ''
-      })
+      const response = await loginUser({ user: username, password })
+      if(response && !response.error){
+        setUser(response)
+        setToken(response.token)
+        setTokenUser(response.token)
+      }
+      setRegistrarse(false)
       setTimeout(() => {
         setNotificacion(null)
       }, 5000);
@@ -282,6 +292,7 @@ const App = () => {
       const confirmar = confirm("¿Estás seguro de que querés eliminar este usuario?")
       if (confirmar) {
         const res = await eliminarCuenta(id)
+        console.log("RESPUESTA",res)
         if (res && res.exito) {
           handleLogOut()
           setNotificacion({ tipo: '', mensaje: res.exito })
@@ -374,15 +385,15 @@ const App = () => {
     setPeliculasFilter(
       peliculas.filter(p => p.nombre.toLowerCase().includes(value.toLowerCase().trim()))
     )
-    console.log("FILTRADAS",peliculasFilter)
+    console.log("FILTRADAS", peliculasFilter)
   }
 
-  const handlerMyPosts = async(id) =>{
+  const handlerMyPosts = async (id) => {
     try {
       const res = await misPost(id)
       setMisPeliculas(res.peliculas)
-      if(res && res.error){
-        setNotificacion({tipo: 'error', mensaje: res.error})
+      if (res && res.error) {
+        setNotificacion({ tipo: 'error', mensaje: res.error })
         setTimeout(() => {
           setNotificacion(null)
         }, 5000);
@@ -478,16 +489,16 @@ const App = () => {
         )}
 
         {verPerfil && !mostrarFormularioPelicula && (
-          <Perfil perfil={user} eliminarCuenta={handlerEliminarCuenta} editar={setEditarUsuario} obtenerUser={handlerObtenerDatosUser} misPost = {handlerMyPosts} verMisPost = {setVerMisPost}/>
+          <Perfil perfil={user} eliminarCuenta={handlerEliminarCuenta} editar={setEditarUsuario} obtenerUser={handlerObtenerDatosUser} misPost={handlerMyPosts} verMisPost={setVerMisPost} />
         )}
       </div>
       <div>
-        {verPerfil && editarUser ? <UserForm handlerUsuario={handlerUsuario} user={userForm} setRegistrarse={setRegistrarse} handleEditarSubmit={handlerEditarUsuario} editarUser={editarUser} setEditarUsuario = {setEditarUsuario}/> : ''}
+        {verPerfil && editarUser ? <UserForm handlerUsuario={handlerUsuario} user={userForm} setRegistrarse={setRegistrarse} handleEditarSubmit={handlerEditarUsuario} editarUser={editarUser} setEditarUsuario={setEditarUsuario} /> : ''}
       </div>
       <div>
         {!verPerfil && !mostrarFormularioPelicula ? (
           <Pelicula
-            peliculas={peliculasFilter? peliculasFilter : peliculas}
+            peliculas={peliculasFilter ? peliculasFilter : peliculas}
             user={user}
             eliminarPelicula={handlerEliminarPelicula}
             editar={handlerObtenerPelicula}
@@ -498,13 +509,13 @@ const App = () => {
         )}
       </div>
       <div>
-        {verPerfil && verMisPost?(<Pelicula
-            peliculas={misPeliculas}
-            user={user}
-            eliminarPelicula={handlerEliminarPelicula}
-            editar={handlerObtenerPelicula}
-            handlerLike={handlerLike}
-          />):('')}
+        {verPerfil && verMisPost ? (<Pelicula
+          peliculas={misPeliculas}
+          user={user}
+          eliminarPelicula={handlerEliminarPelicula}
+          editar={handlerObtenerPelicula}
+          handlerLike={handlerLike}
+        />) : ('')}
       </div>
     </div>
   )
