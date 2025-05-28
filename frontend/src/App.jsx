@@ -59,7 +59,6 @@ const App = () => {
   }, [user])
 
 
-
   const handlerPelicula = (event) => {
     const { value, name } = event.target
 
@@ -273,7 +272,7 @@ const App = () => {
       const password = userForm.password
       setNotificacion({ tipo: 'exito', mensaje: res.message })
       const response = await loginUser({ user: username, password })
-      if(response && !response.error){
+      if (response && !response.error) {
         setUser(response)
         setToken(response.token)
         setTokenUser(response.token)
@@ -292,7 +291,7 @@ const App = () => {
       const confirmar = confirm("¿Estás seguro de que querés eliminar este usuario?")
       if (confirmar) {
         const res = await eliminarCuenta(id)
-        console.log("RESPUESTA",res)
+        console.log("RESPUESTA", res)
         if (res && res.exito) {
           handleLogOut()
           setNotificacion({ tipo: '', mensaje: res.exito })
@@ -437,7 +436,7 @@ const App = () => {
   return (
     <div>
       <div>
-        <p className="nav">{user.username}! logged in <button onClick={handleLogOut}>logout</button></p>
+        <p className="navbar">{user.username}! logged in <button onClick={handleLogOut}>logout</button></p>
       </div>
       <div>
         <Notificaciones notificacion={notificacion} />

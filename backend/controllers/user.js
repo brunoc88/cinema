@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt')
 const User = require('../models/user')
 const logger = require('../utils/loggers')
 const Pelicula = require('../models/pelicula')
+const mongoose = require('mongoose')
 
 exports.obtenerUsuarios = async (req, res) => {
   try {
@@ -101,15 +102,30 @@ exports.editarUsuario = async (req, res) => {
 }
 
 exports.eliminarUsuario = async (req, res) => {
+  const session = await mongoose.startSession()
+
   try {
     const { id } = req.params
+
     if (req.user.id !== id) {
-      return res.status(401).json({ error: 'Sin autorizacion!' })
+      return res.status(401).json({ error: 'Sin autorización!' })
     }
 
-    await User.findByIdAndDelete(id)
-    return res.status(200).json({ exito: 'Usuario eliminado!' })
+    session.startTransaction()
+
+    // 1. Eliminar todas las películas del usuario
+    await Pelicula.deleteMany({ user: id }).session(session)
+
+    // 2. Eliminar el usuario
+    await User.findByIdAndDelete(id).session(session)
+
+    await session.commitTransaction()
+    session.endSession()
+
+    return res.status(200).json({ exito: 'Usuario y publicaciones eliminados!' })
   } catch (error) {
+    await session.abortTransaction()
+    session.endSession()
     return res.status(500).json({ error: 'Problemas al eliminar usuario', details: error.message })
   }
 }
