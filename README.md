@@ -40,9 +40,6 @@ Vitest, jsdom y @testing-library/react: para pruebas básicas de componentes y a
 👤 Usuario de prueba
 Puedes iniciar sesión con las siguientes credenciales:
 
-makefile
-Copiar
-Editar
 Usuario: bruno88  
 Email: bruno88@gmail.com  
 Contraseña: 123
