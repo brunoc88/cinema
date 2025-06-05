@@ -50,4 +50,3 @@ Contraseña: 123
 Aún se pueden realizar mejoras como refactorizar componentes usando props.children o implementar un sistema de rutas más robusto con React Router.
 
 El sistema de likes es editable por cualquier usuario, mientras que la eliminación está restringida al creador de la película.
-
